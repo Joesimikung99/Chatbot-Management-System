@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>คู่มือการใช้งานระบบ AI Chatbot — CBMS</title>
+  <meta name="description" content="คู่มือการใช้งานระบบ AI Chatbot (CBMS) สำหรับผู้ใช้งานทั่วไป มหาวิทยาลัยพะเยา">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Sarabun', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+            }
+          },
+          animation: {
+            'pulse-subtle': 'pulseSubtle 2.5s infinite ease-in-out',
+            'fade-in': 'fadeIn 0.6s ease-out both',
+            'slide-in': 'slideIn 0.5s ease-out both',
+          },
+          keyframes: {
+            pulseSubtle: {
+              '0%, 100%': { transform: 'scale(1)', opacity: '1' },
+              '50%': { transform: 'scale(1.03)', opacity: '0.9' },
+            },
+            fadeIn: {
+              from: { opacity: '0', transform: 'translateY(10px)' },
+              to: { opacity: '1', transform: 'translateY(0)' },
+            },
+            slideIn: {
+              from: { opacity: '0', transform: 'translateX(-20px)' },
+              to: { opacity: '1', transform: 'translateX(0)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Sarabun', 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      background-attachment: fixed;
+    }
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(129, 140, 248, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(79, 70, 229, 0.25);
+    }
+    .text-gradient {
+      background: linear-gradient(110deg, #a5b4fc 0%, #c084fc 50%, #f472b6 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .sidebar-link-active {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.25) 0%, rgba(124, 58, 237, 0.15) 100%);
+      border-left: 4px solid #818cf8;
+      color: #ffffff !important;
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(99, 102, 241, 0.3);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(99, 102, 241, 0.5);
+    }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen relative overflow-x-hidden" x-data="{ currentRole: 'user', activeSection: 'intro', showScrollTop: false }" @scroll.window="showScrollTop = (window.pageYOffset > 500)">
+
+  <!-- Background decorative orbs -->
+  <div class="fixed top-[-10%] left-[-10%] w-[35rem] h-[35rem] rounded-full bg-indigo-900/20 blur-[100px] pointer-events-none -z-10"></div>
+  <div class="fixed bottom-[-10%] right-[-10%] w-[40rem] h-[40rem] rounded-full bg-purple-900/10 blur-[120px] pointer-events-none -z-10"></div>
+  <div class="fixed top-[40%] left-[45%] w-[25rem] h-[25rem] rounded-full bg-sky-900/10 blur-[100px] pointer-events-none -z-10"></div>
+
+  <!-- Main Navigation Header -->
+  <header class="sticky top-0 z-40 w-full glass-panel border-b border-white/10 shadow-lg">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-lg shadow-lg font-bold bg-gradient-to-br from-indigo-500 to-purple-600">🤖</div>
+        <span class="font-bold text-lg tracking-tight">CBMS AI Chatbot</span>
+        <span 
+          x-text="currentRole === 'user' ? 'คู่มือผู้ใช้งาน' : 'คู่มือผู้ดูแลระบบ'" 
+          :class="currentRole === 'user' ? 'bg-indigo-500/20 text-indigo-300 border-indigo-400/20' : 'bg-red-500/20 text-red-300 border-red-400/20'"
+          class="text-xs px-2.5 py-0.5 rounded-full font-medium border"
+        ></span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="https://appupili.up.ac.th/cbms/" class="text-sm font-medium text-slate-300 hover:text-white transition-colors flex items-center gap-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          กลับสู่ระบบจริง
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
+    
+    <!-- Sidebar Navigation (Desktop Only) -->
+    <aside class="hidden lg:block lg:col-span-1 sticky top-24 self-start space-y-4">
+      <!-- Role Selector Pill -->
+      <div class="glass-panel p-1 rounded-2xl flex gap-1 shadow-lg">
+        <button 
+          @click="currentRole = 'user'; activeSection = 'intro'; window.scrollTo({ top: 0, behavior: 'smooth' })" 
+          :class="currentRole === 'user' ? 'bg-indigo-600 text-white font-bold shadow-lg' : 'text-slate-400 hover:text-slate-200'"
+          class="flex-1 py-2 text-xs rounded-xl transition-all focus:outline-none flex items-center justify-center gap-1.5"
+        >
+          <span>👤</span> ผู้ใช้ทั่วไป
+        </button>
+        <button 
+          @click="currentRole = 'admin'; activeSection = 'admin-intro'; window.scrollTo({ top: 0, behavior: 'smooth' })" 
+          :class="currentRole === 'admin' ? 'bg-indigo-600 text-white font-bold shadow-lg' : 'text-slate-400 hover:text-slate-200'"
+          class="flex-1 py-2 text-xs rounded-xl transition-all focus:outline-none flex items-center justify-center gap-1.5"
+        >
+          <span>🛠️</span> แอดมิน
+        </button>
+      </div>
+
+      <div class="glass-panel p-5 rounded-2xl space-y-6">
+        <!-- USER ROLE SIDEBAR -->
+        <div x-show="currentRole === 'user'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="space-y-6">
+          <div>
+            <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest px-3 mb-3">ภาพรวม</h3>
+            <nav class="space-y-1">
+              <a @click="activeSection = 'intro'" href="#intro" :class="{ 'sidebar-link-active': activeSection === 'intro' }" class="block px-3 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all">
+                ข้อมูลเบื้องต้นเกี่ยวกับระบบ
+              </a>
+              <a @click="activeSection = 'overview-flow'" href="#overview-flow" :class="{ 'sidebar-link-active': activeSection === 'overview-flow' }" class="block px-3 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all">
+                ผังการทำงาน (User Flow)
+              </a>
+            </nav>
+          </div>
+          <div>
+            <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest px-3 mb-3">ขั้นตอนการใช้งาน</h3>
+            <nav class="space-y-1">
+              <a @click="activeSection = 'step-1'" href="#step-1" :class="{ 'sidebar-link-active': activeSection === 'step-1' }" class="block px-3 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all flex items-center gap-2">
+                <span class="w-5 h-5 flex items-center justify-center rounded-full bg-slate-800 text-xs font-bold border border-slate-700">1</span>
+                การเข้าใช้งานหน้าแรก
+              </a>
+              <a @click="activeSection = 'step-2'" href="#step-2" :class="{ 'sidebar-link-active': activeSection === 'step-2' }" class="block px-3 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all flex items-center gap-2">
+                <span class="w-5 h-5 flex items-center justify-center rounded-full bg-slate-800 text-xs font-bold border border-slate-700">2</span>
+                หน้าแชทแรกเริ่ม
+              </a>
+              <a @click="activeSection = 'step-3'" href="#step-3" :class="{ 'sidebar-link-active': activeSection === 'step-3' }" class="block px-3 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all flex items-center gap-2">
+                <span class="w-5 h-5 flex items-center justify-center rounded-full bg-slate-800 text-xs font-bold border border-slate-700">3</span>
+                การถามตอบและให้คะแนน
+              </a>
+              <a @click="activeSection = 'step-4'" href="#step-4" :class="{ 'sidebar-link-active': activeSection === 'step-4' }" class="block px-3 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all flex items-center gap-2">
+                <span class="w-5 h-5 flex items-center justify-center rounded-full bg-slate-800 text-xs font-bold border border-slate-700">4</span>
+                การส่งเรื่องให้เจ้าหน้าที่
+              </a>
+            </nav>
+          </div>
+          <div>
+            <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest px-3 mb-3">ข้อมูลเพิ่มเติม</h3>
+            <nav class="space-y-1">
+              <a @click="activeSection = 'tips'" href="#tips" :class="{ 'sidebar-link-active': activeSection === 'tips' }" class="block px-3 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all">
+                💡 เทคนิคการคุยกับบอท
+              </a>
+            </nav>
+          </div>
+        </div>
+
+        <!-- ADMIN ROLE SIDEBAR -->
+        <div x-show="currentRole === 'admin'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="space-y-6" style="display: none;">
+          <div>
+            <h3 class="text-xs font-bold text-red-400 uppercase tracking-widest px-3 mb-3">ภาพรวมแอดมิน</h3>
+            <nav class="space-y-1">
+              <a @click="activeSection = 'admin-intro'" href="#admin-intro" :class="{ 'sidebar-link-active': activeSection === 'admin-intro' }" class="block px-3 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all">
+                การเข้าใช้งานระบบแอดมิน
+              </a>
+            </nav>
+          </div>
+          <div>
+            <h3 class="text-xs font-bold text-red-400 uppercase tracking-widest px-3 mb-3">วิเคราะห์และรายงาน</h3>
+            <nav class="space-y-1">
+              <a @click="activeSection = 'admin-group-1'" href="#admin-group-1" :class="{ 'sidebar-link-active': activeSection === 'admin-group-1' }" class="block px-3 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all flex items-center gap-2">
+                <span class="w-5 h-5 flex items-center justify-center rounded-full bg-slate-800 text-xs font-bold border border-slate-700">1</span>
+                สถิติ & ประวัติการแชท
+              </a>
+            </nav>
+          </div>
+          <div>
+            <h3 class="text-xs font-bold text-red-400 uppercase tracking-widest px-3 mb-3">คลังความรู้ & Feedback</h3>
+            <nav class="space-y-1">
+              <a @click="activeSection = 'admin-group-2'" href="#admin-group-2" :class="{ 'sidebar-link-active': activeSection === 'admin-group-2' }" class="block px-3 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all flex items-center gap-2">
+                <span class="w-5 h-5 flex items-center justify-center rounded-full bg-slate-800 text-xs font-bold border border-slate-700">2</span>
+                จัดการข้อมูล & คำร้อง
+              </a>
+            </nav>
+          </div>
+          <div>
+            <h3 class="text-xs font-bold text-red-400 uppercase tracking-widest px-3 mb-3">การตั้งค่าระบบ</h3>
+            <nav class="space-y-1">
+              <a @click="activeSection = 'admin-group-3'" href="#admin-group-3" :class="{ 'sidebar-link-active': activeSection === 'admin-group-3' }" class="block px-3 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all flex items-center gap-2">
+                <span class="w-5 h-5 flex items-center justify-center rounded-full bg-slate-800 text-xs font-bold border border-slate-700">3</span>
+                ตั้งค่าโมเดล & ตัวบอท
+              </a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="col-span-1 lg:col-span-3 space-y-12 pb-24">
+      
+      <!-- USER ROLE CONTENT -->
+      <div x-show="currentRole === 'user'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="space-y-12">
+        <!-- Intro Section -->
+        <section id="intro" class="glass-panel p-8 rounded-3xl animate-fade-in relative overflow-hidden" @intersect="activeSection = 'intro'">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-bl-full pointer-events-none"></div>
+          <span class="text-indigo-400 font-semibold tracking-wide text-sm uppercase">Welcome to CBMS Manual</span>
+          <h1 class="text-3xl md:text-4xl font-extrabold text-white mt-2 mb-4 leading-tight">
+            ระบบตอบคำถามอัจฉริยะ <span class="text-gradient">CBMS Chatbot</span>
+          </h1>
+          <p class="text-slate-300 leading-relaxed mb-6">
+            ระบบ **CBMS (Chatbot Management System)** เป็นผู้ช่วยตอบคำถามอัตโนมัติสำหรับมหาวิทยาลัยพะเยา ขับเคลื่อนด้วยเทคโนโลยี **RAG (Retrieval-Augmented Generation)** ซึ่งเป็นเทคโนโลยี AI ชั้นสูง ที่ช่วยในการดึงข้อมูลจากเอกสารคลังความรู้ (Knowledge Base) บนระบบ Google Drive ของมหาวิทยาลัยมาประมวลผล ร่วมกับโมเดลภาษาขนาดใหญ่ (LLM) ทำให้แชทบอทตอบคำถามได้อย่างถูกต้อง มีเหตุผล และอ้างอิงข้อมูลจริงได้แม่นยำตลอด 24 ชั่วโมง
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5">
+              <div class="text-2xl mb-2">⚡</div>
+              <h4 class="font-bold text-white mb-1">ตอบกลับทันที</h4>
+              <p class="text-xs text-slate-400 leading-relaxed">ตอบคำถามด้วยความเร็วระดับเสี้ยววินาที ไม่ต้องรอคิวสายด่วน</p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5">
+              <div class="text-2xl mb-2">📚</div>
+              <h4 class="font-bold text-white mb-1">ความรู้มหาวิทยาลัย</h4>
+              <p class="text-xs text-slate-400 leading-relaxed">คำตอบมาจากระเบียบ ข้อบังคับ และคู่มือของมหาวิทยาลัยโดยตรง</p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5">
+              <div class="text-2xl mb-2">👨‍💼</div>
+              <h4 class="font-bold text-white mb-1">ส่งต่อให้เจ้าหน้าที่</h4>
+              <p class="text-xs text-slate-400 leading-relaxed">หากต้องการข้อมูลลึกซึ้ง สามารถฝากข้อมูลให้เจ้าหน้าที่ติดต่อกลับได้</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- User Flow Section -->
+        <section id="overview-flow" class="glass-panel p-8 rounded-3xl animate-fade-in" @intersect="activeSection = 'overview-flow'">
+          <h2 class="text-2xl font-bold text-white mb-4">ผังการทำงานหลัก (User Flow)</h2>
+          <p class="text-slate-300 mb-8">
+            การทำงานสำหรับผู้ใช้ทั่วไปนั้นเรียบง่ายและเป็นเส้นตรง โดยแบ่งออกเป็น 4 ลำดับขั้นตอนหลักดังแผนภูมิต่อไปนี้:
+          </p>
+          
+          <!-- Interactive Horizontal Flowchart -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 relative">
+            <!-- Step 1 Card -->
+            <a href="#step-1" class="p-5 rounded-2xl glass-card text-center relative group">
+              <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-400/30 flex items-center justify-center mx-auto mb-3 group-hover:bg-indigo-600 group-hover:text-white transition-all">1</div>
+              <h4 class="font-bold text-white text-sm mb-1">เข้าสู่หน้าหลัก</h4>
+              <p class="text-xs text-slate-400">ค้นหาไอคอนแชทบอทกลมๆ ที่ขวาล่างของหน้าจอ</p>
+            </a>
+            <!-- Step 2 Card -->
+            <a href="#step-2" class="p-5 rounded-2xl glass-card text-center relative group">
+              <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-400/30 flex items-center justify-center mx-auto mb-3 group-hover:bg-indigo-600 group-hover:text-white transition-all">2</div>
+              <h4 class="font-bold text-white text-sm mb-1">เปิดหน้าต่างแชท</h4>
+              <p class="text-xs text-slate-400">คลิกที่ปุ่มแชท จะมีคำต้อนรับและปุ่มคำถามพบบ่อย</p>
+            </a>
+            <!-- Step 3 Card -->
+            <a href="#step-3" class="p-5 rounded-2xl glass-card text-center relative group">
+              <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-400/30 flex items-center justify-center mx-auto mb-3 group-hover:bg-indigo-600 group-hover:text-white transition-all">3</div>
+              <h4 class="font-bold text-white text-sm mb-1">ถามตอบและประเมิน</h4>
+              <p class="text-xs text-slate-400">พิมพ์คำถาม คุยกับ AI และให้คะแนนเพื่อปรับปรุงระบบ</p>
+            </a>
+            <!-- Step 4 Card -->
+            <a href="#step-4" class="p-5 rounded-2xl glass-card text-center relative group">
+              <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-400/30 flex items-center justify-center mx-auto mb-3 group-hover:bg-indigo-600 group-hover:text-white transition-all">4</div>
+              <h4 class="font-bold text-white text-sm mb-1">ติดต่อเจ้าหน้าที่</h4>
+              <p class="text-xs text-slate-400">หากคุยไม่รู้เรื่อง สามารถส่งแบบฟอร์มเพื่อส่งต่อคนได้</p>
+            </a>
+          </div>
+        </section>
+
+        <!-- Step 1 Details -->
+        <section id="step-1" class="glass-panel p-8 rounded-3xl space-y-6" @intersect="activeSection = 'step-1'">
+          <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+            <span class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-sm text-white">1</span>
+            <h2 class="text-2xl font-bold text-white">ขั้นตอนที่ 1: การเข้าใช้งานหน้าแรก</h2>
+          </div>
+          <p class="text-slate-300">
+            เมื่อผู้ใช้งานเข้ามายังเว็บไซต์หลักของ **CBMS** (`https://appupili.up.ac.th/cbms/`) จะพบหน้าตาที่หรูหราสวยงาม โดยจุดประสงค์หลักคือผู้ใช้งานสามารถเห็นปุ่มแชทที่ถูกจัดเตรียมไว้สำหรับพูดคุยได้ทันที
+          </p>
+          
+          <div class="space-y-4">
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative group">
+              <img src="assets/manual/step1_landing.png" alt="หน้าแรก Landing Page และไอคอนแชทบอท" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 1: หน้าหลักของเว็บพร้อมวงกลมสีแดงชี้ตำแหน่งปุ่มแชท</div>
+            </div>
+            
+            <div class="p-5 rounded-2xl bg-indigo-950/40 border border-indigo-800/30 space-y-3">
+              <h4 class="font-bold text-indigo-200">🔍 จุดสังเกตที่สำคัญ (แถบวงกลมสีแดง):</h4>
+              <ul class="space-y-2 text-sm text-slate-300">
+                <li class="flex items-start gap-2">
+                  <span class="text-red-400 font-bold mt-0.5">•</span>
+                  <span><strong>ไอคอนแชทบอทกลมๆ ที่มุมล่างขวา (#cbms-bubble):</strong> เป็นปุ่มลอยตัวที่จะติดตามผู้ใช้ตลอดการเลื่อนหน้าเว็บ เมื่อเอาเมาส์ไปชี้จะมีแอนิเมชันเด้งขึ้นมาเล็กน้อย กดปุ่มนี้เพื่อเริ่มคุยกับผู้ช่วย AI อัจฉริยะ</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-red-400 font-bold mt-0.5">•</span>
+                  <span><strong>ปุ่ม Admin Panel ด้านบนขวา:</strong> สำหรับผู้ดูแลระบบ เจ้าหน้าที่ หรือผู้บริหารที่ต้องการเข้าระบบเพื่อไปแก้ไขคลังข้อมูล จัดการโมเดล AI หรือดูรายงานสถิติต่างๆ</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 2 Details -->
+        <section id="step-2" class="glass-panel p-8 rounded-3xl space-y-6" @intersect="activeSection = 'step-2'">
+          <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+            <span class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-sm text-white">2</span>
+            <h2 class="text-2xl font-bold text-white">ขั้นตอนที่ 2: หน้าแชทแรกเริ่ม (เปิดครั้งแรก)</h2>
+          </div>
+          <p class="text-slate-300">
+            เมื่อคลิกที่ไอคอนบอทกลมๆ ที่ขวาล่าง หน้าต่างแชทจะเปิดแสดงขึ้นมาด้วยแอนิเมชันป็อปอัปที่สวยงาม โดยจะมีการโหลดข้อความทักทายแรกเริ่มของระบบขึ้นมาแสดงผลโดยอัตโนมัติ
+          </p>
+          
+          <div class="space-y-4">
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative">
+              <img src="assets/manual/step2_widget_open.png" alt="หน้าต่างแชทเปิดใช้งานครั้งแรก" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 2: รายละเอียดในหน้าต่างแชทแรกเริ่มที่เปิดขึ้นมา</div>
+            </div>
+            
+            <div class="p-5 rounded-2xl bg-indigo-950/40 border border-indigo-800/30 space-y-3">
+              <h4 class="font-bold text-indigo-200">🔍 จุดสังเกตที่สำคัญ (แถบวงกลมสีแดง):</h4>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-300">
+                <div class="p-3 bg-slate-900/60 rounded-xl">
+                  <span class="font-bold text-red-400 block mb-1">1. หัวข้อ & สถานะออนไลน์</span>
+                  แสดงโลโก้ ชื่อบอท พร้อมสัญลักษณ์จุดไฟสีเขียวกะพริบ บ่งบอกว่าผู้ช่วย AI พร้อมทำงานตอบคำถามแบบ Real-time ทันที
+                </div>
+                <div class="p-3 bg-slate-900/60 rounded-xl">
+                  <span class="font-bold text-red-400 block mb-1">2. ปุ่มขอคุยกับเจ้าหน้าที่</span>
+                  ปุ่ม <em>"ขอคุยกับเจ้าหน้าที่" (Handoff)</em> เมื่อคลิกจะเป็นการเปิดหน้าต่างให้ส่งแบบฟอร์มขอความช่วยเหลือไปยังแอดมินระบบโดยตรง
+                </div>
+                <div class="p-3 bg-slate-900/60 rounded-xl">
+                  <span class="font-bold text-red-400 block mb-1">3. ช่องพิมพ์และส่งข้อความ</span>
+                  ช่องป้อนข้อความคำถาม และปุ่มส่งรูปเครื่องบินกระดาษ สามารถกดส่งโดยกดปุ่ม Enter หรือกดที่ปุ่มส่งรูปเครื่องบินกระดาษได้
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 3 Details -->
+        <section id="step-3" class="glass-panel p-8 rounded-3xl space-y-6" @intersect="activeSection = 'step-3'">
+          <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+            <span class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-sm text-white">3</span>
+            <h2 class="text-2xl font-bold text-white">ขั้นตอนที่ 3: การถามตอบและการให้คะแนนตอบกลับ</h2>
+          </div>
+          <p class="text-slate-300">
+            เมื่อคุณพิมพ์คำถามลงในช่องแชท (เช่น "แนะนำมหาวิทยาลัยพะเยาให้หน่อย") บอทจะแสดงสัญลักษณ์กะพริบเพื่อจำลองการกำลังพิมพ์ตอบ จากนั้น AI RAG Engine จะดึงคำตอบที่ถูกต้องที่สุดมาแสดง
+          </p>
+          
+          <div class="space-y-4">
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative">
+              <img src="assets/manual/step3_chat_active.png" alt="หน้าต่างสนทนาและการตอบกลับพร้อมปุ่ม Feedback" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 3: หน้าต่างสนทนาพร้อมปุ่มประเมินคำตอบบอท</div>
+            </div>
+            
+            <div class="p-5 rounded-2xl bg-indigo-950/40 border border-indigo-800/30 space-y-3">
+              <h4 class="font-bold text-indigo-200">🔍 จุดสังเกตที่สำคัญ (แถบวงกลมสีแดง):</h4>
+              <ul class="space-y-2 text-sm text-slate-300">
+                <li class="flex items-start gap-2">
+                  <span class="text-red-400 font-bold mt-0.5">•</span>
+                  <span><strong>ข้อความตอบกลับของบอท:</strong> กล่องสีขาวจะเป็นข้อความที่ประมวลผลมาจากคลังความรู้ มีการจัดรูปแบบหัวข้อ ลิงก์ และฟอนต์ที่อ่านง่าย สบายตา</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-red-400 font-bold mt-0.5">•</span>
+                  <span><strong>ปุ่มประเมินความพึงพอใจ (Feedback Buttons):</strong> ปุ่มไอคอนรูปยกนิ้วโป้ง (ถูกใจ 👍) และคว่ำนิ้วโป้ง (ไม่ถูกใจ 👎) ใต้คำตอบของบอท ช่วยแจ้งให้เจ้าหน้าที่ผู้ดูแลทราบว่า ข้อมูลที่บอทตอบตรงตามต้องการและถูกต้องเพียงใด ซึ่งมีความสำคัญอย่างยิ่งสำหรับผู้พัฒนาในการคัดเลือกข้อมูลเพื่อมาปรับปรุง AI ต่อไป</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 4 Details -->
+        <section id="step-4" class="glass-panel p-8 rounded-3xl space-y-6" @intersect="activeSection = 'step-4'">
+          <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+            <span class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-sm text-white">4</span>
+            <h2 class="text-2xl font-bold text-white">ขั้นตอนที่ 4: การส่งต่อและฝากเรื่องให้เจ้าหน้าที่ (Handoff)</h2>
+          </div>
+          <p class="text-slate-300">
+            ในกรณีที่คำถามนั้นซับซ้อนมาก และ AI ไม่สามารถให้ข้อมูลที่ครบถ้วนได้ คุณสามารถเลือกคุยกับเจ้าหน้าที่ (คนจริง) โดยกรอกแบบฟอร์มการขอความช่วยเหลือเพื่อให้เจ้าหน้าที่ตอบกลับภายหลัง
+          </p>
+          
+          <div class="space-y-4">
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative">
+              <img src="assets/manual/step4_handoff_form.png" alt="แบบฟอร์มส่งข้อมูลติดต่อกลับให้เจ้าหน้าที่" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 4: แบบฟอร์มกรอกข้อมูลส่งต่อเจ้าหน้าที่</div>
+            </div>
+            
+            <div class="p-5 rounded-2xl bg-indigo-950/40 border border-indigo-800/30 space-y-3">
+              <h4 class="font-bold text-indigo-200">🔍 รายละเอียดฟิลด์ต่างๆ ในแบบฟอร์ม (วงกลมสีแดง):</h4>
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs text-slate-300">
+                <div class="p-3 bg-slate-900/60 rounded-xl">
+                  <span class="font-bold text-indigo-300 block mb-1">ช่องทางติดต่อกลับ</span>
+                  เลือกแพลตฟอร์มที่คุณสะดวก เช่น <strong>LINE, Facebook, หรือ โทรศัพท์</strong>
+                </div>
+                <div class="p-3 bg-slate-900/60 rounded-xl">
+                  <span class="font-bold text-indigo-300 block mb-1">ข้อมูลติดต่อ</span>
+                  ป้อนข้อมูลติดต่อกลับ เช่น <strong>LINE ID, ชื่อเฟซบุ๊ก, หรือเบอร์โทรศัพท์</strong>
+                </div>
+                <div class="p-3 bg-slate-900/60 rounded-xl">
+                  <span class="font-bold text-indigo-300 block mb-1">ข้อความเพิ่มเติม</span>
+                  เขียนสรุปข้อคำถามหรือปัญหาเพิ่มเติม เพื่อให้เจ้าหน้าที่เตรียมข้อมูลได้ถูกต้อง
+                </div>
+                <div class="p-3 bg-slate-900/60 rounded-xl border border-amber-500/20 bg-amber-500/5 text-amber-200">
+                  <span class="font-bold text-amber-400 block mb-1">ปุ่มส่งคำขอติดต่อ</span>
+                  เมื่อกรอกข้อมูลเรียบร้อย กด <strong>"ส่งคำขอติดต่อ"</strong> ระบบจะนำเรื่องบันทึกในฐานข้อมูลแอดมินโดยอัตโนมัติ
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Pro Tips section -->
+        <section id="tips" class="glass-panel p-8 rounded-3xl space-y-6" @intersect="activeSection = 'tips'">
+          <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+            <span>💡</span> เทคนิคการถามคำถามเพื่อให้ได้คำตอบที่ดีที่สุด
+          </h2>
+          <p class="text-slate-300">
+            เพื่อให้คุณได้รับการตอบกลับจาก AI Chatbot อย่างถูกต้อง รวดเร็ว และตรงจุด มีเทคนิคเล็กๆ น้อยๆ ในการป้อนคำถามดังนี้ครับ:
+          </p>
+          <div class="space-y-4">
+            <div class="flex gap-4 p-4 bg-slate-900/40 rounded-2xl border border-white/5">
+              <div class="text-3xl">📌</div>
+              <div>
+                <h4 class="font-bold text-white mb-1">ใช้คำสำคัญที่ชัดเจน</h4>
+                <p class="text-sm text-slate-400">แทนที่จะพิมพ์ยาวๆ เช่น "อยากรู้ว่าตอนเย็นๆ ในมหาลัยมีสถานที่ไหนที่สามารถออกกำลังกายวิ่งเล่นได้บ้างคะ" ให้ใช้คำสั้นกระชับ เช่น "แนะนำสถานที่ออกกำลังกายใน ม.พะเยา"</p>
+              </div>
+            </div>
+            <div class="flex gap-4 p-4 bg-slate-900/40 rounded-2xl border border-white/5">
+              <div class="text-3xl">🔍</div>
+              <div>
+                <h4 class="font-bold text-white mb-1">สอบถามเกี่ยวกับข้อบังคับ หรือเอกสารจริง</h4>
+                <p class="text-sm text-slate-400">เนื่องจากระบบ CBMS ค้นข้อมูลจากคลังเอกสาร มหาวิทยาลัย การถามเรื่อง "ค่าเทอม หลักสูตรบริหาร", "ระเบียบการลงทะเบียนเรียน" หรือ "การยืมหนังสือของสำนักหอสมุด" จะได้คำตอบที่แม่นยำสูงมากและมีข้อมูลอ้างอิงชัดเจน</p>
+              </div>
+            </div>
+            <div class="flex gap-4 p-4 bg-slate-900/40 rounded-2xl border border-white/5">
+              <div class="text-3xl">🔄</div>
+              <div>
+                <h4 class="font-bold text-white mb-1">ถามต่อเนื่องในแชทเดิม</h4>
+                <p class="text-sm text-slate-400">แชทบอทจดจำประวัติคำถามก่อนหน้าของเซสชันได้ สามารถพิมพ์ถามความขยายผลเพิ่ม เช่น "เปิดบริการวันเสาร์ไหม" หลังจากคำถามเกี่ยวกับเวลาให้บริการหอสมุดก่อนหน้านี้ได้เลย</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ADMIN ROLE CONTENT -->
+      <div x-show="currentRole === 'admin'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0" class="space-y-12" style="display: none;">
+        
+        <!-- Admin Intro Section -->
+        <section id="admin-intro" class="glass-panel p-8 rounded-3xl relative overflow-hidden" @intersect="activeSection = 'admin-intro'">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-bl-full pointer-events-none"></div>
+          <span class="text-red-400 font-semibold tracking-wide text-sm uppercase">Admin Command Center</span>
+          <h1 class="text-3xl md:text-4xl font-extrabold text-white mt-2 mb-4 leading-tight">
+            ระบบจัดการหลังบ้าน <span class="text-gradient">CBMS Admin Panel</span>
+          </h1>
+          <p class="text-slate-300 leading-relaxed mb-6">
+            หน้าต่างสำหรับแอดมินและเจ้าหน้าที่ (Dashboard & Management) เป็นหัวใจสำคัญของระบบ **CBMS** ในการควบคุม พัฒนา และดูแลความสามารถของ AI Chatbot โดยผู้ใช้ที่มีสิทธิ์สามารถจัดการคลังข้อมูลความรู้ (Knowledge Base) บน Google Drive, ตรวจสอบบทสนทนาย้อนหลัง, จัดการคำขอติดต่อจากผู้ใช้งาน (Handoff), และดูรายงานการประเมินผลความพึงพอใจ เพื่อนำมาใช้วิเคราะห์และปรับปรุงคำตอบของ AI ให้ถูกต้องยิ่งขึ้น
+          </p>
+          
+          <div class="p-5 rounded-2xl bg-red-950/20 border border-red-800/30 space-y-3">
+            <h4 class="font-bold text-red-300 flex items-center gap-2">🔑 ขั้นตอนการเข้าใช้งานระบบแอดมิน:</h4>
+            <ol class="space-y-2 text-sm text-slate-300 list-decimal pl-5">
+              <li>คลิกปุ่ม <strong>"Admin Panel"</strong> หรือเมนู <strong>"ระบบผู้ดูแลระบบ"</strong> ที่ได้ไฮไลท์ไว้ตอนเข้าหน้าแรก หรือเข้าลิงก์ตรงที่ <code class="bg-slate-900 px-2 py-0.5 rounded text-red-300">https://appupili.up.ac.th/cbms/admin/login.php</code></li>
+              <li>ระบบจะทำการ Redirect ไปยังหน้าล็อกอินของมหาวิทยาลัยพะเยา (Microsoft OAuth / Single Sign-On) ให้ลงชื่อเข้าใช้งานด้วยบัญชีผู้ใช้ของมหาวิทยาลัย</li>
+              <li>เมื่อยืนยันตัวตนสำเร็จ ระบบจะนำท่านเข้าสู่หน้าหลักของระบบแอดมิน (Dashboard) โดยอัตโนมัติ</li>
+            </ol>
+          </div>
+        </section>
+
+        <!-- Admin Group 1: Analytics & Reports -->
+        <section id="admin-group-1" class="glass-panel p-8 rounded-3xl space-y-8" @intersect="activeSection = 'admin-group-1'">
+          <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+            <span class="w-8 h-8 rounded-xl bg-red-600 flex items-center justify-center font-bold text-sm text-white">1</span>
+            <h2 class="text-2xl font-bold text-white">หมวดหมู่ที่ 1: การวิเคราะห์ข้อมูลและรายงาน (Analytics & Reports)</h2>
+          </div>
+          <p class="text-slate-300">
+            ระบบแอดมินของ CBMS มีหน้าสำหรับเรียกดูรายงาน สถิติเชิงเปรียบเทียบ และบทสนทนาที่เกิดขึ้นย้อนหลังทั้งหมด เพื่อนำข้อมูลมาวางแผนปรับปรุงการบริการของแชทบอทให้ตอบคำถามตรงจุดสูงสุด
+          </p>
+
+          <!-- 1_dashboard -->
+          <div class="space-y-4 pt-4 border-t border-white/5">
+            <h3 class="text-xl font-bold text-red-300">1.1 หน้า Dashboard รายงานสถิติภาพรวม (Dashboard)</h3>
+            <p class="text-sm text-slate-300">
+              หน้านี้จะสรุปตัวชี้วัด (KPIs) ที่สำคัญที่สุดของระบบ โดยแสดงเป็นกล่องตัวเลขสถิติและกราฟแสดงแนวโน้มเพื่อให้ผู้บริหารหรือแอดมินเห็นความคุ้มค่าของการใช้งานระบบทันที
+            </p>
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative">
+              <img src="assets/manual/admin_1_dashboard.png" alt="Dashboard แอดมิน" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 1: แผงควบคุมหลักแสดงจำนวนบทสนทนา อัตรา Handoff และความพึงพอใจของบอท</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5 text-xs text-slate-300 space-y-1">
+              <span class="font-bold text-red-300 block mb-1">🔴 วงกลมสีแดงระบุตำแหน่ง:</span>
+              <p>• <strong>แถบเมนูด้านซ้าย:</strong> แสดงว่ากำลังอยู่ในเมนู "Dashboard"</p>
+              <p>• <strong>กล่องสถิติหลัก & กราฟ:</strong> แสดงสถิติจำนวนการใช้งาน และยอดเฉลี่ยคะแนนความพึงพอใจแบบอัพเดทสด</p>
+            </div>
+          </div>
+
+          <!-- 2_conversations -->
+          <div class="space-y-4 pt-6 border-t border-white/5">
+            <h3 class="text-xl font-bold text-red-300">1.2 รายการประวัติบทสนทนา (Conversations)</h3>
+            <p class="text-sm text-slate-300">
+              ส่วนที่แอดมินสามารถเข้ามาอ่านบทสนทนาจริงที่เกิดขึ้นระหว่างผู้ใช้ทั่วไปกับ AI Chatbot ได้ย้อนหลัง เพื่อนำมาตรวจจับว่า AI สามารถตอบปัญหาได้อย่างไหลลื่นหรือไม่
+            </p>
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative">
+              <img src="assets/manual/admin_2_conversations.png" alt="Conversations แอดมิน" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 2: หน้ารายละเอียดการเก็บ Log ประวัติการคุยทุกเซสชัน</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5 text-xs text-slate-300 space-y-1">
+              <span class="font-bold text-red-300 block mb-1">🔴 วงกลมสีแดงระบุตำแหน่ง:</span>
+              <p>• <strong>เมนู Conversations:</strong> เมนูหลักสำหรับการไล่ดูการแชทรายวัน</p>
+              <p>• <strong>ตารางรายการสนทนา:</strong> แสดงช่วงเวลา ช่องทาง ปุ่มดูรายละเอียดสนทนาเชิงลึก (View Details) รวมถึงข้อมูลผู้แชท</p>
+            </div>
+          </div>
+
+          <!-- 3_analytics -->
+          <div class="space-y-4 pt-6 border-t border-white/5">
+            <h3 class="text-xl font-bold text-red-300">1.3 การวิเคราะห์ข้อมูลเชิงลึก (Analytics)</h3>
+            <p class="text-sm text-slate-300">
+              ระบบมีส่วนของข้อมูลสถิติเชิงลึก เช่น กราฟแสดงสัดส่วนช่วงเวลาที่มีการทักเข้ามามากที่สุด, อัตราส่วนความพอใจเฉลี่ย, และจำนวนข้อความแลกเปลี่ยนสูงสุด
+            </p>
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative">
+              <img src="assets/manual/admin_3_analytics.png" alt="Analytics แอดมิน" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 3: หน้าวิเคราะห์ข้อมูลเชิงลึกในรูปแบบกราฟ</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5 text-xs text-slate-300 space-y-1">
+              <span class="font-bold text-red-300 block mb-1">🔴 วงกลมสีแดงระบุตำแหน่ง:</span>
+              <p>• <strong>เมนู Analytics:</strong> เมนูหลักสำหรับการดูสถิติในรูปแบบกราฟเชิงเปรียบเทียบ</p>
+            </div>
+          </div>
+
+          <!-- 4_token_usage -->
+          <div class="space-y-4 pt-6 border-t border-white/5">
+            <h3 class="text-xl font-bold text-red-300">1.4 หน้าสถิติการใช้งาน Token และค่าใช้จ่าย (Token Usage)</h3>
+            <p class="text-sm text-slate-300">
+              เนื่องจากแชทบอทใช้โมเดลภาษาขนาดใหญ่ (LLM) ในการรัน จึงต้องมีการประเมินต้นทุน หน้านี้จะสรุปจำนวน Token ที่ใช้ไปทั้งฝั่ง Input/Output และแปลงเป็นมูลค่าค่าใช้จ่ายจำลองให้เห็นทันที
+            </p>
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative">
+              <img src="assets/manual/admin_4_token_usage.png" alt="Token Usage แอดมิน" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 4: หน้าสรุปยอดการใช้งาน Token และงบประมาณ API</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5 text-xs text-slate-300 space-y-1">
+              <span class="font-bold text-red-300 block mb-1">🔴 วงกลมสีแดงระบุตำแหน่ง:</span>
+              <p>• <strong>เมนู Token Usage:</strong> ฟังก์ชันตรวจสอบการบริโภคทรัพยากร AI</p>
+            </div>
+          </div>
+
+          <!-- 5_reports -->
+          <div class="space-y-4 pt-6 border-t border-white/5">
+            <h3 class="text-xl font-bold text-red-300">1.5 หน้ารายงานสรุปข้อมูลรวม (Reports)</h3>
+            <p class="text-sm text-slate-300">
+              แอดมินสามารถกรองข้อมูลสถิติตามช่วงเวลา และกดดาวน์โหลดไฟล์ข้อมูลสรุปสำหรับใช้นำเสนอต่อผู้บริหารเพื่อนำไปใช้ปรับปรุงแผนกและบุคลากรต่อไป
+            </p>
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative">
+              <img src="assets/manual/admin_5_reports.png" alt="Reports แอดมิน" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 5: หน้ากรองข้อมูลและส่งออกรายงานสรุปสถิติประจำรอบการศึกษา/การทำงาน</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5 text-xs text-slate-300 space-y-1">
+              <span class="font-bold text-red-300 block mb-1">🔴 วงกลมสีแดงระบุตำแหน่ง:</span>
+              <p>• <strong>เมนู Reports:</strong> ฟังก์ชันสำหรับส่งออกรายงานสรุป</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Admin Group 2: Knowledge & Feedbacks -->
+        <section id="admin-group-2" class="glass-panel p-8 rounded-3xl space-y-8" @intersect="activeSection = 'admin-group-2'">
+          <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+            <span class="w-8 h-8 rounded-xl bg-red-600 flex items-center justify-center font-bold text-sm text-white">2</span>
+            <h2 class="text-2xl font-bold text-white">หมวดหมู่ที่ 2: จัดการคลังความรู้ & Feedback (Knowledge & Feedback)</h2>
+          </div>
+          <p class="text-slate-300">
+            หัวใจของระบบ RAG คือ **คลังข้อมูลความรู้** ส่วนนี้จะแนะนำวิธีการนำข้อมูลเข้า ปรับปรุงข้อมูลจากผู้ใช้งาน และดูคำสั่งติดต่อกลับแอดมินกรณี AI ตอบคำถามบางประเภทไม่ได้
+          </p>
+
+          <!-- 6_knowledge -->
+          <div class="space-y-4 pt-4 border-t border-white/5">
+            <h3 class="text-xl font-bold text-red-300">2.1 จัดการฐานข้อมูลความรู้ (Knowledge Base)</h3>
+            <p class="text-sm text-slate-300">
+              หน้านี้ใช้สำหรับดึงข้อมูล เอกสารระเบียบของมหาวิทยาลัยจาก Google Drive มาประมวลผลเป็น Vector Database สำหรับให้ AI ใช้อ้างอิง แอดมินสามารถสั่งการซิงค์ไฟล์ได้ทันทีจากที่นี่
+            </p>
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative">
+              <img src="assets/manual/admin_6_knowledge.png" alt="Knowledge Base แอดมิน" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 6: หน้าระบบจัดการเชื่อมต่อ Google Drive คลังความรู้ RAG</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5 text-xs text-slate-300 space-y-1">
+              <span class="font-bold text-red-300 block mb-1">🔴 วงกลมสีแดงระบุตำแหน่ง:</span>
+              <p>• <strong>เมนู Knowledge:</strong> เมนูเข้าสู่การจัดการคลังความรู้</p>
+              <p>• <strong>ปุ่ม Sync / อัปเดตคลังความรู้ (Sync Knowledge):</strong> ใช้ซิงค์ข้อมูลล่าสุดจาก Google Drive หรือไฟล์แนบใหม่ เพื่ออัพเดทสมองของ AI</p>
+            </div>
+          </div>
+
+          <!-- wiki knowledge -->
+          <div class="space-y-4 pt-6 border-t border-white/5">
+            <h3 class="text-xl font-bold text-red-300">2.2 ชั้นความรู้ที่ AI เรียบเรียง (Wiki Knowledge)</h3>
+            <p class="text-sm text-slate-300">
+              Wiki Knowledge เป็นการ <strong>ยกระดับคลังความรู้เดิม</strong> แทนที่จะให้บอทค้นจาก "เศษเนื้อหา (Chunk)" ที่ถูกตัดจากเอกสารดิบทุก ~1,200 ตัวอักษร ระบบจะให้ AI อ่านเอกสารทั้งฉบับแล้ว <strong>เรียบเรียงใหม่เป็น "หน้า Wiki" แยกตามหัวข้อที่ผู้ใช้มักถาม</strong> (เช่น "เวลาเปิดทำการ") โดยแต่ละหน้าจบครบในตัว พร้อมชุดคำถามตัวอย่างที่คนจริงน่าจะพิมพ์ถาม ทำให้บอทตอบคำถามภาษาไทยสั้น ๆ ได้แม่นและครบขึ้น
+            </p>
+
+            <!-- workflow -->
+            <div class="grid gap-3 sm:grid-cols-3">
+              <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5">
+                <div class="text-red-300 font-bold text-sm mb-1">1. สร้างร่าง</div>
+                <p class="text-xs text-slate-400 leading-relaxed">AI ร่างหน้า Wiki จากเอกสารในคลังความรู้ — ทุกหน้าเริ่มต้นเป็น "ร่าง (Draft)"</p>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5">
+                <div class="text-red-300 font-bold text-sm mb-1">2. ตรวจทาน</div>
+                <p class="text-xs text-slate-400 leading-relaxed">แอดมิน <strong>ต้องอ่านและแก้ไข</strong> เทียบกับเอกสารต้นฉบับ เพื่อกันข้อมูลคลาดเคลื่อน</p>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5">
+                <div class="text-red-300 font-bold text-sm mb-1">3. เผยแพร่</div>
+                <p class="text-xs text-slate-400 leading-relaxed">กดเผยแพร่แล้วบอทจะนำหน้านั้นไปใช้ตอบผู้ใช้ได้ทันที</p>
+              </div>
+            </div>
+
+            <!-- comparison table -->
+            <div class="overflow-x-auto rounded-xl border border-white/10">
+              <table class="w-full text-xs text-left">
+                <thead class="bg-slate-800/70 text-slate-200">
+                  <tr>
+                    <th class="px-4 py-3 font-semibold">หัวข้อ</th>
+                    <th class="px-4 py-3 font-semibold">Knowledge Base (เดิม)</th>
+                    <th class="px-4 py-3 font-semibold text-red-300">Wiki Knowledge (ใหม่)</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5 text-slate-400">
+                  <tr>
+                    <td class="px-4 py-3 font-medium text-slate-300">หน่วยความรู้</td>
+                    <td class="px-4 py-3">Chunk — เศษเนื้อหาตัดทุก ~1,200 ตัวอักษร</td>
+                    <td class="px-4 py-3 text-red-100/80">หน้า Wiki — 1 หัวข้อจบครบในหน้าเดียว</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 font-medium text-slate-300">ที่มาเนื้อหา</td>
+                    <td class="px-4 py-3">เอกสารดิบจาก Google Drive</td>
+                    <td class="px-4 py-3 text-red-100/80">AI เรียบเรียง + คนตรวจทานก่อนใช้</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 font-medium text-slate-300">การค้นเจอ</td>
+                    <td class="px-4 py-3">เทียบคำถามกับเนื้อหา (ภาษาไทยคะแนนต่ำ)</td>
+                    <td class="px-4 py-3 text-red-100/80">เทียบคำถามกับคำถามตัวอย่าง (แม่นกว่า)</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 font-medium text-slate-300">ความครบของคำตอบ</td>
+                    <td class="px-4 py-3">อาจไม่ครบ ข้อมูลกระจายหลาย Chunk</td>
+                    <td class="px-4 py-3 text-red-100/80">ครบ รวมเรื่องเดียวกันไว้หน้าเดียว</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 font-medium text-slate-300">ต้นทุน Token</td>
+                    <td class="px-4 py-3">สูงกว่า (ส่ง Chunk หลายก้อน)</td>
+                    <td class="px-4 py-3 text-red-100/80">ประหยัดกว่า ~60% (ส่งหน้าเดียวสั้น ๆ)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- pros/cons -->
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                <strong class="text-emerald-300 text-sm">✅ ข้อดี</strong>
+                <ul class="list-disc list-inside mt-2 space-y-1 text-xs text-emerald-100/80 leading-relaxed">
+                  <li>ตอบแม่นและครบขึ้น โดยเฉพาะคำถามไทยสั้น ๆ</li>
+                  <li>ประหยัดค่า AI ต่อการตอบหนึ่งครั้ง</li>
+                  <li>คนตรวจทานก่อนเผยแพร่ ลดโอกาสบอทมั่ว</li>
+                  <li>บอทรู้ขอบเขตความรู้ตัวเอง แนะนำหัวข้อใกล้เคียงได้</li>
+                </ul>
+              </div>
+              <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20">
+                <strong class="text-rose-300 text-sm">⚠️ ข้อควรระวัง</strong>
+                <ul class="list-disc list-inside mt-2 space-y-1 text-xs text-rose-100/80 leading-relaxed">
+                  <li>มีค่าเรียกใช้ AI ตอนสั่งสร้างร่าง</li>
+                  <li>ต้องใช้แรงคนตรวจทานทุกหน้าก่อนเผยแพร่</li>
+                  <li>ถ้าเอกสารต้นทางแก้ไข ต้องสร้างร่างใหม่และตรวจซ้ำ</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5 text-xs text-slate-300 leading-relaxed">
+              <strong class="text-red-300">🔗 สองเมนูทำงานร่วมกัน:</strong>
+              Knowledge Base ยังเป็น "คลังเอกสารดิบ" ต้นทางเสมอ ส่วน Wiki Knowledge คือ "ฉบับเรียบเรียงที่คนรับรองแล้ว"
+              เวลาผู้ใช้ถาม ระบบจะค้นจาก Wiki ก่อน ถ้าไม่ตรงจึงตกไปค้นจากเอกสารดิบตามเดิม ดังนั้นเอกสารที่ยังไม่ได้ทำเป็น Wiki ก็ยังตอบได้ — เป็นการ <strong>เสริม ไม่ใช่แทนที่</strong>
+            </div>
+          </div>
+
+          <!-- 7_feedback -->
+          <div class="space-y-4 pt-6 border-t border-white/5">
+            <h3 class="text-xl font-bold text-red-300">2.3 หน้าแสดงผลข้อมูลป้อนกลับจากผู้ใช้ (Feedback)</h3>
+            <p class="text-sm text-slate-300">
+              เมื่อผู้ใช้งานกดยกนิ้วโป้ง 👍 (เป็นประโยชน์) หรือคว่ำนิ้วโป้ง 👎 (ไม่เป็นประโยชน์) พร้อมระบุข้อความติชมย้อนกลับ ข้อมูลทั้งหมดจะมาปรากฏในหน้านี้เพื่อให้แอดมินคัดเลือกคำถามที่มีปัญหาไปพัฒนาบอทต่อ
+            </p>
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative">
+              <img src="assets/manual/admin_7_feedback.png" alt="User Feedback แอดมิน" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 7: รายการแสดง Feedback จากระบบหน้าแชทของบอท</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5 text-xs text-slate-300 space-y-1">
+              <span class="font-bold text-red-300 block mb-1">🔴 วงกลมสีแดงระบุตำแหน่ง:</span>
+              <p>• <strong>เมนู Feedback:</strong> รายการแสดงข้อเสนอแนะของฝั่งผู้ใช้</p>
+            </div>
+          </div>
+
+          <!-- 8_missed -->
+          <div class="space-y-4 pt-6 border-t border-white/5">
+            <h3 class="text-xl font-bold text-red-300">2.4 คำถามที่บอทตอบไม่ได้ (Unanswered Questions)</h3>
+            <p class="text-sm text-slate-300">
+              หากผู้ใช้ถามคำถามที่ไม่มีเนื้อหาใน Google Drive คลังความรู้ ระบบจะคัดลอกคำถามเหล่านั้นมาไว้ในหน้านี้ (Missed Questions) เพื่อให้แอดมินทราบว่าควรหาเอกสารหรือความรู้อะไรมาใส่เพิ่มเข้าไปใน Google Drive
+            </p>
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative">
+              <img src="assets/manual/admin_8_missed.png" alt="Missed Questions แอดมิน" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 8: รายการคำถามที่บอทตอบไม่ได้เพื่อให้แอดมินเพิ่มคลังข้อมูลระเบียบกฎเกณฑ์</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5 text-xs text-slate-300 space-y-1">
+              <span class="font-bold text-red-300 block mb-1">🔴 วงกลมสีแดงระบุตำแหน่ง:</span>
+              <p>• <strong>เมนู Unanswered:</strong> สำหรับจัดการรายการคำถามที่บอทไม่มีความรู้</p>
+              <p>• <strong>ปุ่มกดเพิ่มข้อมูลเข้าคลัง (Add Knowledge Base):</strong> ลิงก์ตรงที่แอดมินสามารถกดเขียนคำตอบแบบ Manual หรือเลือกอัปโหลดเอกสารเพื่อป้อนคำตอบสำหรับคำถามดังกล่าวลงสู่คลังความรู้ RAG</p>
+            </div>
+          </div>
+
+          <!-- 9_handoff -->
+          <div class="space-y-4 pt-6 border-t border-white/5">
+            <h3 class="text-xl font-bold text-red-300">2.5 รายการฝากเรื่องติดต่อเจ้าหน้าที่ (Handoff Requests)</h3>
+            <p class="text-sm text-slate-300">
+              แสดงข้อมูลรายชื่อ เบอร์โทร ไอดีไลน์ และรายละเอียดคำถามที่ผู้ใช้อัปโหลดส่งคำขอมาเมื่อต้องการคุยกับเจ้าหน้าที่ (คนจริง) แอดมินสามารถกดเข้าไปดูประวัติบทสนทนาก่อนหน้านั้น เพื่อเตรียมคำตอบก่อนโทรหรือพิมพ์ติดต่อกลับไป และกดบันทึกสถานะ "ติดต่อกลับแล้ว" เพื่อทำงานร่วมกับทีมได้อย่างมีระบบ
+            </p>
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative">
+              <img src="assets/manual/admin_9_handoff.png" alt="Handoff Requests แอดมิน" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 9: ตารางรายการคำขอติดต่อกลับจากผู้ใช้พร้อมปุ่มดำเนินการ</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5 text-xs text-slate-300 space-y-1">
+              <span class="font-bold text-red-300 block mb-1">🔴 วงกลมสีแดงระบุตำแหน่ง:</span>
+              <p>• <strong>เมนู Handoff:</strong> รายการคำขอคุยกับคนจริง</p>
+              <p>• <strong>ปุ่มแก้ไขสถานะ / คุยรายละเอียด:</strong> ปรับสถานะจาก "Pending" (รอดำเนินการ) เป็น "Resolved" (จัดการเสร็จสิ้น) หลังจากติดต่อกลับเพื่อบริการผู้รับบริการเรียบร้อย</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Admin Group 3: System Settings -->
+        <section id="admin-group-3" class="glass-panel p-8 rounded-3xl space-y-8" @intersect="activeSection = 'admin-group-3'">
+          <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+            <span class="w-8 h-8 rounded-xl bg-red-600 flex items-center justify-center font-bold text-sm text-white">3</span>
+            <h2 class="text-2xl font-bold text-white">หมวดหมู่ที่ 3: การตั้งค่าระบบการทำงานของแชทบอท (System Settings)</h2>
+          </div>
+          <p class="text-slate-300">
+            สำหรับนักพัฒนาระบบและแอดมินหลักที่ทำหน้าที่วางโครงสร้างการตอบ ปรับโมเดล และจัดการสิทธิ์ แผงควบคุมเหล่านี้คือฟังก์ชันที่ปรับแต่งพฤทีพรรณและการทำงานหลักของตัวระบบแชทบอททั้งหมด
+          </p>
+
+          <!-- 10_integration -->
+          <div class="space-y-4 pt-4 border-t border-white/5">
+            <h3 class="text-xl font-bold text-red-300">3.1 การเชื่อมต่อและติดตั้ง Widget (Integration)</h3>
+            <p class="text-sm text-slate-300">
+              ในหน้านี้จะมีโค้ด Script (HTML/Javascript Snippet) สั้นๆ เตรียมไว้ให้ แอดมินสามารถคัดลอกโค้ดนี้ส่งไปให้นักพัฒนาเว็บไซต์คณะ หรือหน่วยงานย่อยภายในมหาวิทยาลัยไปแปะลงในแท็ก Body ของเว็บตนเองเพื่อเริ่มให้บริการแชทบอทกลมๆ ที่มุมขวาล่างของหน้าจอได้ทันที
+            </p>
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative">
+              <img src="assets/manual/admin_10_integration.png" alt="Integration แอดมิน" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 10: ส่วนโค้ดสำหรับนำแชทบอทไปติดตั้งตามเว็บไซต์ภายนอก</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5 text-xs text-slate-300 space-y-1">
+              <span class="font-bold text-red-300 block mb-1">🔴 วงกลมสีแดงระบุตำแหน่ง:</span>
+              <p>• <strong>เมนู Integration:</strong> แผงรับ Code snippet สำหรับติดตั้งวิดเจ็ตภายนอก</p>
+            </div>
+          </div>
+
+          <!-- 11_bots -->
+          <div class="space-y-4 pt-6 border-t border-white/5">
+            <h3 class="text-xl font-bold text-red-300">3.2 หน้าจัดการรายชื่อบอท (Bots Management)</h3>
+            <p class="text-sm text-slate-300">
+              ใช้สร้างและแก้ไขโปรไฟล์ของบอทแต่ละตัว แอดมินสามารถเลือกชื่อบอท, รูปอวาตาร์แสดงแทนบอท (Avatar Link), และตั้งค่าคำเริ่มต้นทักทายผู้ใช้งาน (Greeting Message) ที่จะแสดงเป็นคำแรกเวลาทักแชทเข้ามา
+            </p>
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative">
+              <img src="assets/manual/admin_11_bots.png" alt="Bots Management แอดมิน" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 11: หน้าระบบตั้งค่าคาแรกเตอร์และปุ่มข้อความเริ่มต้นของแชทบอท</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5 text-xs text-slate-300 space-y-1">
+              <span class="font-bold text-red-300 block mb-1">🔴 วงกลมสีแดงระบุตำแหน่ง:</span>
+              <p>• <strong>เมนู Bots:</strong> ส่วนปรับชื่อ สี แอนิเมชั่น และธีมหลักของหน้าต่างบอท</p>
+            </div>
+          </div>
+
+          <!-- 12_models -->
+          <div class="space-y-4 pt-6 border-t border-white/5">
+            <h3 class="text-xl font-bold text-red-300">3.3 หน้าจัดการโมเดล AI (AI Models)</h3>
+            <p class="text-sm text-slate-300">
+              หน้านี้อนุญาตให้แอดมินสลับการใช้โมเดลสมองของ AI (เช่น Gemini-1.5-Pro, Gemini-1.5-Flash, หรือค่ายอื่นๆ), ปรับแต่งค่า **Temperature** (ยิ่งใกล้ 0 ยิ่งตอบตามข้อเท็จจริงสูงสุด / ยิ่งมีค่ามากยิ่งตอบอย่างสร้างสรรค์), และป้อนคำสั่งควบคุมพฤติกรรมหลัก (System Instruction)
+            </p>
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative">
+              <img src="assets/manual/admin_12_models.png" alt="AI Models แอดมิน" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 12: ระบบจัดการและตั้งค่าพฤติกรรมเบื้องลึกและเลือกค่ายของสมอง AI</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5 text-xs text-slate-300 space-y-1">
+              <span class="font-bold text-red-300 block mb-1">🔴 วงกลมสีแดงระบุตำแหน่ง:</span>
+              <p>• <strong>เมนู Models:</strong> เข้าสู่ฟังก์ชันตั้งค่าโมเดล</p>
+              <p>• <strong>ฟิลด์แก้ไขค่าพารามิเตอร์:</strong> แนะนำให้ตั้งค่า Temperature ต่ำๆ (~0.1 ถึง 0.2) สำหรับคำตอบที่เป็นข้อมูลระเบียบเพื่อลดความคลาดเคลื่อนของข้อมูล</p>
+            </div>
+          </div>
+
+          <!-- 13_users -->
+          <div class="space-y-4 pt-6 border-t border-white/5">
+            <h3 class="text-xl font-bold text-red-300">3.4 จัดการผู้ใช้งานระบบหลังบ้าน (User Management)</h3>
+            <p class="text-sm text-slate-300">
+              ใช้สำหรับเพิ่มบัญชีเจ้าหน้าที่แอดมินร่วมทำงาน หรือเปลี่ยนบทบาท (Role) ของผู้ดูแลระบบภายในหน่วยงาน เพื่อแบ่งหน้าที่การรับผิดชอบ
+            </p>
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative">
+              <img src="assets/manual/admin_13_users.png" alt="User Management แอดมิน" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 13: แฟ้มตารางสิทธิ์บัญชีผู้ใช้และการแก้ไขสถานะแอดมิน</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5 text-xs text-slate-300 space-y-1">
+              <span class="font-bold text-red-300 block mb-1">🔴 วงกลมสีแดงระบุตำแหน่ง:</span>
+              <p>• <strong>เมนู Users:</strong> ส่วนจัดการสิทธิ์เจ้าหน้าที่แอดมินหลังบ้าน</p>
+            </div>
+          </div>
+
+          <!-- 14_email_settings -->
+          <div class="space-y-4 pt-6 border-t border-white/5">
+            <h3 class="text-xl font-bold text-red-300">3.5 ตั้งค่าระบบส่งอีเมลแจ้งเตือน (Email Settings)</h3>
+            <p class="text-sm text-slate-300">
+              ใช้กำหนดค่า SMTP Server เพื่อใช้ยิงอีเมลอัตโนมัติแจ้งเตือนไปยังเจ้าหน้าที่หลักทันทีที่มีข้อความ Handoff จากผู้ใช้ เพื่อป้องกันการตกหล่นของคำขอบริการ
+            </p>
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative">
+              <img src="assets/manual/admin_14_email_settings.png" alt="Email Settings แอดมิน" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 14: หน้ารายละเอียดสำหรับการกำหนดค่าเซิร์ฟเวอร์ SMTP เมลแจ้งเตือน</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5 text-xs text-slate-300 space-y-1">
+              <span class="font-bold text-red-300 block mb-1">🔴 วงกลมสีแดงระบุตำแหน่ง:</span>
+              <p>• <strong>เมนู Email Settings:</strong> ตรวจสอบ SMTP คอนฟิกูเรชันสำหรับการเตือนทีม</p>
+            </div>
+          </div>
+
+          <!-- 15_settings -->
+          <div class="space-y-4 pt-6 border-t border-white/5">
+            <h3 class="text-xl font-bold text-red-300">3.6 ตั้งค่าทั่วไปของระบบ (General Settings)</h3>
+            <p class="text-sm text-slate-300">
+              การตั้งค่าข้อมูลพื้นฐานของแอปพลิเคชัน เช่น การตั้งชื่อระบบ, การระบุโลโก้หน่วยงาน หรือข้อมูลทางกฎหมายเบื้องหลัง (Terms/PDPA policy)
+            </p>
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 p-2 shadow-2xl relative">
+              <img src="assets/manual/admin_15_settings.png" alt="Settings แอดมิน" class="w-full h-auto rounded-xl">
+              <div class="absolute bottom-4 left-4 bg-slate-900/90 text-xs text-slate-300 px-3 py-1.5 rounded-lg border border-white/10">ภาพที่ 15: หน้าสรุปตารางตัวเลือกตั้งค่าแอปพลิเคชันทั่วไป</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5 text-xs text-slate-300 space-y-1">
+              <span class="font-bold text-red-300 block mb-1">🔴 วงกลมสีแดงระบุตำแหน่ง:</span>
+              <p>• <strong>เมนู Settings:</strong> ตั้งค่าชื่อแอพ หน้าล็อกอิน และระบบเบื้องหลังทั้งหมด</p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Floating Scroll To Top Button -->
+  <button 
+    @click="window.scrollTo({ top: 0, behavior: 'smooth' })" 
+    x-show="showScrollTop" 
+    x-transition
+    class="fixed bottom-6 right-6 w-12 h-12 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center shadow-xl hover:shadow-indigo-600/30 transition-all z-50 focus:outline-none"
+    title="เลื่อนขึ้นบนสุด"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7" />
+    </svg>
+  </button>
+
+  <!-- Footer -->
+  <footer class="w-full py-8 mt-12 text-center text-slate-500 text-xs border-t border-white/5">
+    <div class="max-w-7xl mx-auto px-6 space-y-2">
+      <p>© 2026 มหาวิทยาลัยพะเยา · ระบบจัดการแชทบอทอัจฉริยะ (CBMS) สงวนลิขสิทธิ์</p>
+      <p>จัดทำเอกสารคู่มือการใช้งานระบบสำหรับผู้ใช้ทั่วไปและผู้ดูแลระบบ เพื่อเพิ่มประสิทธิภาพการสื่อสารผ่านบอท RAG AI</p>
+    </div>
+  </footer>
+
+  <!-- Scroll-spy script to track page location -->
+  <script>
+    document.addEventListener('alpine:init', () => {
+      const sections = ['intro', 'overview-flow', 'step-1', 'step-2', 'step-3', 'step-4', 'tips', 'admin-intro', 'admin-group-1', 'admin-group-2', 'admin-group-3'];
+      window.addEventListener('scroll', () => {
+        const scrollPosition = window.scrollY + 200; // Offset for header
+        for (const section of sections) {
+          const el = document.getElementById(section);
+          if (el) {
+            const top = el.offsetTop;
+            const height = el.offsetHeight;
+            if (scrollPosition >= top && scrollPosition < top + height) {
+              // Set the active section in Alpine.js
+              const alpineBody = document.querySelector('[x-data]');
+              if (alpineBody && alpineBody.__x) {
+                alpineBody.__x.$data.activeSection = section;
+              }
+              break;
+            }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

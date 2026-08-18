@@ -1,0 +1,30 @@
+Options -Indexes
+RewriteEngine On
+
+# Force HTTPS (uncomment in production)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Security Headers
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-XSS-Protection "1; mode=block"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+# Block access to sensitive files
+<FilesMatch "\.(env|json|lock|log|sql|sh|md|gitignore|htpasswd)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Block access to app/ config/ storage/ directories
+RedirectMatch 403 ^/(app|config|storage|database)/
+
+# Allow only public/ as web root
+# Note: configure Apache/Nginx DocumentRoot to /public instead
+# This .htaccess is for shared hosting fallback
+
+# Route all non-file requests through index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ public/index.php [QSA,L]

@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>คู่มือการจัดการระบบ AI Chatbot — CBMS Admin Panel</title>
+  <meta name="description" content="คู่มือการใช้งานระบบจัดการแชทบอทอัจฉริยะ (CBMS Admin Panel) สำหรับผู้ดูแลระบบ มหาวิทยาลัยพะเยา">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Sarabun', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0fdfa',
+              100: '#ccfbf1',
+              200: '#99f6e4',
+              300: '#5eead4',
+              400: '#2dd4bf',
+              500: '#14b8a6',
+              600: '#0d9488',
+              700: '#0f766e',
+              800: '#115e59',
+              900: '#134e4a',
+            }
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-out both',
+            'pulse-soft': 'pulseSoft 3s infinite ease-in-out',
+          },
+          keyframes: {
+            fadeIn: {
+              from: { opacity: '0', transform: 'translateY(12px)' },
+              to: { opacity: '1', transform: 'translateY(0)' },
+            },
+            pulseSoft: {
+              '0%, 100%': { transform: 'scale(1)', opacity: '1' },
+              '50%': { transform: 'scale(1.02)', opacity: '0.95' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Sarabun', 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0b0f19 0%, #111827 50%, #0b0f19 100%);
+      background-attachment: fixed;
+    }
+    .glass-panel {
+      background: rgba(17, 24, 39, 0.65);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.25s ease;
+    }
+    .glass-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(20, 184, 166, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(20, 184, 166, 0.15);
+    }
+    .text-gradient {
+      background: linear-gradient(110deg, #2dd4bf 0%, #38bdf8 50%, #818cf8 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .sidebar-link-active {
+      background: linear-gradient(135deg, rgba(20, 184, 166, 0.15) 0%, rgba(56, 189, 248, 0.05) 100%);
+      border-left: 4px solid #14b8a6;
+      color: #2dd4bf !important;
+      font-weight: 600;
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(11, 15, 25, 0.8);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(20, 184, 166, 0.25);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(20, 184, 166, 0.45);
+    }
+  </style>
+</head>
+<body class="text-slate-200 min-h-screen relative overflow-x-hidden" x-data="{ activeSection: 'intro', showScrollTop: false }" @scroll.window="showScrollTop = (window.pageYOffset > 500)">
+
+  <!-- Background decorative orbs -->
+  <div class="fixed top-[-10%] right-[-15%] w-[45rem] h-[45rem] rounded-full bg-teal-950/15 blur-[120px] pointer-events-none -z-10"></div>
+  <div class="fixed bottom-[-10%] left-[-15%] w-[45rem] h-[45rem] rounded-full bg-cyan-950/15 blur-[120px] pointer-events-none -z-10"></div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 w-full glass-panel border-b border-white/5 shadow-xl">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-lg shadow-lg font-bold bg-gradient-to-br from-teal-400 to-cyan-600">🛠️</div>
+        <span class="font-bold text-lg tracking-tight">CBMS Admin Control</span>
+        <span class="text-xs px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 font-medium border border-teal-400/20">คู่มือผู้ดูแลระบบ</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="https://appupili.up.ac.th/cbms/admin/" class="text-sm font-medium text-slate-300 hover:text-white transition-colors flex items-center gap-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          เข้าสู่ระบบแอดมิน
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="hidden lg:block lg:col-span-1 sticky top-24 self-start space-y-4 max-h-[80vh] overflow-y-auto pr-2">
+      <div class="glass-panel p-4 rounded-2xl space-y-5">
+        <div>
+          <h3 class="text-xs font-bold text-teal-400 uppercase tracking-widest px-2 mb-2">บทนำ</h3>
+          <nav class="space-y-0.5">
+            <a @click="activeSection = 'intro'" href="#intro" :class="{ 'sidebar-link-active': activeSection === 'intro' }" class="block px-2.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-all">
+              ข้อมูลทั่วไป & สิทธิ์
+            </a>
+          </nav>
+        </div>
+        
+        <div>
+          <h3 class="text-xs font-bold text-teal-400 uppercase tracking-widest px-2 mb-2">เมนูการจัดการบอท</h3>
+          <nav class="space-y-0.5">
+            <a @click="activeSection = 'admin_1_dashboard'" href="#admin_1_dashboard" :class="{ 'sidebar-link-active': activeSection === 'admin_1_dashboard' }" class="block px-2.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+              <span class="w-4 h-4 text-xs bg-slate-800 rounded border border-slate-700 flex items-center justify-center font-bold">1</span> Dashboard
+            </a>
+            <a @click="activeSection = 'admin_2_conversations'" href="#admin_2_conversations" :class="{ 'sidebar-link-active': activeSection === 'admin_2_conversations' }" class="block px-2.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+              <span class="w-4 h-4 text-xs bg-slate-800 rounded border border-slate-700 flex items-center justify-center font-bold">2</span> Conversations
+            </a>
+            <a @click="activeSection = 'admin_3_analytics'" href="#admin_3_analytics" :class="{ 'sidebar-link-active': activeSection === 'admin_3_analytics' }" class="block px-2.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+              <span class="w-4 h-4 text-xs bg-slate-800 rounded border border-slate-700 flex items-center justify-center font-bold">3</span> Analytics
+            </a>
+            <a @click="activeSection = 'admin_4_token_usage'" href="#admin_4_token_usage" :class="{ 'sidebar-link-active': activeSection === 'admin_4_token_usage' }" class="block px-2.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+              <span class="w-4 h-4 text-xs bg-slate-800 rounded border border-slate-700 flex items-center justify-center font-bold">4</span> Token Usage
+            </a>
+            <a @click="activeSection = 'admin_5_reports'" href="#admin_5_reports" :class="{ 'sidebar-link-active': activeSection === 'admin_5_reports' }" class="block px-2.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+              <span class="w-4 h-4 text-xs bg-slate-800 rounded border border-slate-700 flex items-center justify-center font-bold">5</span> Reports
+            </a>
+            <a @click="activeSection = 'admin_6_knowledge'" href="#admin_6_knowledge" :class="{ 'sidebar-link-active': activeSection === 'admin_6_knowledge' }" class="block px-2.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+              <span class="w-4 h-4 text-xs bg-slate-800 rounded border border-slate-700 flex items-center justify-center font-bold">6</span> Knowledge Base
+            </a>
+            <a @click="activeSection = 'admin_7_wiki'" href="#admin_7_wiki" :class="{ 'sidebar-link-active': activeSection === 'admin_7_wiki' }" class="block px-2.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+              <span class="w-4 h-4 text-xs bg-teal-600/80 rounded border border-teal-500 flex items-center justify-center font-bold">7</span> Wiki Knowledge
+            </a>
+            <a @click="activeSection = 'admin_8_feedback'" href="#admin_8_feedback" :class="{ 'sidebar-link-active': activeSection === 'admin_8_feedback' }" class="block px-2.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+              <span class="w-4 h-4 text-xs bg-slate-800 rounded border border-slate-700 flex items-center justify-center font-bold">8</span> Feedback
+            </a>
+            <a @click="activeSection = 'admin_9_missed'" href="#admin_9_missed" :class="{ 'sidebar-link-active': activeSection === 'admin_9_missed' }" class="block px-2.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+              <span class="w-4 h-4 text-xs bg-slate-800 rounded border border-slate-700 flex items-center justify-center font-bold">9</span> Unanswered
+            </a>
+            <a @click="activeSection = 'admin_10_handoff'" href="#admin_10_handoff" :class="{ 'sidebar-link-active': activeSection === 'admin_10_handoff' }" class="block px-2.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+              <span class="w-4 h-4 text-xs bg-slate-800 rounded border border-slate-700 flex items-center justify-center font-bold">10</span> Handoff Requests
+            </a>
+            <a @click="activeSection = 'admin_11_integration'" href="#admin_11_integration" :class="{ 'sidebar-link-active': activeSection === 'admin_11_integration' }" class="block px-2.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+              <span class="w-4 h-4 text-xs bg-slate-800 rounded border border-slate-700 flex items-center justify-center font-bold">11</span> Integration
+            </a>
+          </nav>
+        </div>
+
+        <div>
+          <h3 class="text-xs font-bold text-teal-400 uppercase tracking-widest px-2 mb-2">เมนูการตั้งค่าระบบ</h3>
+          <nav class="space-y-0.5">
+            <a @click="activeSection = 'admin_12_bots'" href="#admin_12_bots" :class="{ 'sidebar-link-active': activeSection === 'admin_12_bots' }" class="block px-2.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+              <span class="w-4 h-4 text-xs bg-slate-800 rounded border border-slate-700 flex items-center justify-center font-bold">12</span> Bots Config
+            </a>
+            <a @click="activeSection = 'admin_13_models'" href="#admin_13_models" :class="{ 'sidebar-link-active': activeSection === 'admin_13_models' }" class="block px-2.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+              <span class="w-4 h-4 text-xs bg-slate-800 rounded border border-slate-700 flex items-center justify-center font-bold">13</span> AI Models
+            </a>
+            <a @click="activeSection = 'admin_14_users'" href="#admin_14_users" :class="{ 'sidebar-link-active': activeSection === 'admin_14_users' }" class="block px-2.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+              <span class="w-4 h-4 text-xs bg-slate-800 rounded border border-slate-700 flex items-center justify-center font-bold">14</span> Users
+            </a>
+            <a @click="activeSection = 'admin_15_email_settings'" href="#admin_15_email_settings" :class="{ 'sidebar-link-active': activeSection === 'admin_15_email_settings' }" class="block px-2.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+              <span class="w-4 h-4 text-xs bg-slate-800 rounded border border-slate-700 flex items-center justify-center font-bold">15</span> Email Settings
+            </a>
+            <a @click="activeSection = 'admin_16_settings'" href="#admin_16_settings" :class="{ 'sidebar-link-active': activeSection === 'admin_16_settings' }" class="block px-2.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+              <span class="w-4 h-4 text-xs bg-slate-800 rounded border border-slate-700 flex items-center justify-center font-bold">16</span> Global Settings
+            </a>
+          </nav>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="col-span-1 lg:col-span-3 space-y-12 pb-24">
+      
+      <!-- Intro Section -->
+      <section id="intro" class="glass-panel p-8 rounded-3xl animate-fade-in" @intersect="activeSection = 'intro'">
+        <span class="text-teal-400 font-semibold tracking-wide text-xs uppercase">CBMS Administrator Control Manual</span>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-white mt-1 mb-4 leading-tight">
+          ระบบจัดการผู้ช่วย AI และบอทตอบคำถาม <span class="text-gradient">CBMS Admin Portal</span>
+        </h1>
+        <p class="text-slate-300 leading-relaxed mb-6">
+          ยินดีต้อนรับผู้ควบคุมระบบ คณะกรรมการจัดทำ และเจ้าหน้าที่แอดมินทุกท่าน เอกสารคู่มือนี้สรุปส่วนการจัดการระบบหลักสำหรับ **ผู้ดูแลระบบ (Administrator)** ของโครงการ **CBMS** ซึ่งเป็นโครงสร้างแบบ Multi-Bot (ระบบบอทหลายตัวแยกตามจุดประสงค์ของแผนก) ทำงานร่วมกับ RAG อัตโนมัติ โดยแบ่งกลุ่มฟีเจอร์การจัดการออกเป็น **การจัดการข้อมูลและการตอบกลับของบอท** และ **การตั้งค่าโครงสร้างพื้นฐานระบบ** 
+        </p>
+
+        <!-- Role Permissions Info Box -->
+        <div class="p-6 rounded-2xl bg-teal-950/20 border border-teal-800/35 space-y-3">
+          <h4 class="font-bold text-teal-300 flex items-center gap-2">
+            <span>🛡️</span> ระบบการแบ่งสิทธิ์ผู้ใช้งาน (Role-Based Access Control)
+          </h4>
+          <p class="text-sm text-slate-400 leading-relaxed">
+            ระบบความปลอดภัยของหลังบ้านจะผูกสิทธิ์เข้ากับระบบ **Microsoft Azure AD (Office 365 @up.ac.th)** และตรวจสอบสิทธิ์แบบไดนามิกผ่าน **CAMS API** ของมหาวิทยาลัยพะเยา โดยแบ่งออกเป็น 3 ระดับสิทธิ์:
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs mt-2">
+            <div class="p-3 bg-slate-900/60 rounded-xl">
+              <span class="font-bold text-teal-400 block mb-1">1. Super Admin</span>
+              ผู้ควบคุมสูงสุด มีสิทธิ์สร้าง/ลบบอท, จัดการโมเดล AI ของระบบทั้งหมด, ตั้งค่าความปลอดภัย, จัดการเพิ่ม/ลบผู้ใช้แอดมินคนอื่นๆ ได้ครบถ้วน
+            </div>
+            <div class="p-3 bg-slate-900/60 rounded-xl">
+              <span class="font-bold text-teal-400 block mb-1">2. Admin</span>
+              มีสิทธิ์บริหารจัดการฐานความรู้ (Knowledge), ตอบกลับคำขอด่วน (Handoff), ดูผลวิเคราะห์ Analytics และปรับแต่งโปรไฟล์คำต้อนรับของบอทที่ตนเองดูแล
+            </div>
+            <div class="p-3 bg-slate-900/60 rounded-xl">
+              <span class="font-bold text-teal-400 block mb-1">3. Viewer (ผู้สังเกตการณ์)</span>
+              สิทธิ์ในการเข้าชมรายงาน รายการข้อความ และสถิติข้อมูล Token Usage ได้อย่างเดียว ไม่สามารถแก้ไข เพิ่มเติม หรือลบข้อมูลใดๆ ในระบบได้
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Horizontal Divider -->
+      <div class="h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
+
+      <!-- STEP 1: Dashboard -->
+      <section id="admin_1_dashboard" class="glass-panel p-6 md:p-8 rounded-3xl space-y-6" @intersect="activeSection = 'admin_1_dashboard'">
+        <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+          <span class="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center font-bold text-sm text-white">1</span>
+          <h2 class="text-2xl font-bold text-white">เมนูที่ 1: Dashboard (รายงานสถิติหลักแบบ Live)</h2>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          หน้าจอแรกที่จะปรากฏหลังเข้าสู่ระบบ ทำหน้าที่สรุปข้อมูลเชิงสถิติที่สำคัญของบอทตัวที่ใช้งานปัจจุบัน ประกอบด้วยกล่องแสดงสถิติแบบ Real-time และกราฟสรุปจำนวนผู้ใช้งานต่อวัน ช่วยให้เห็นแนวโน้มความสนใจและประสิทธิภาพของบอทได้ทันที
+        </p>
+        <div class="space-y-4">
+          <div class="rounded-2xl overflow-hidden border border-white/5 bg-slate-950 p-1.5 shadow-2xl relative">
+            <img src="assets/manual/admin_1_dashboard.png" alt="หน้า Dashboard หลัก" class="w-full h-auto rounded-xl">
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900/50 text-xs text-slate-400 leading-relaxed border border-white/5">
+            <strong>🔴 จุดเน้นวงกลมสีแดง:</strong> แถบทางซ้ายจะไฮไลต์เมนู <strong>Dashboard</strong> ในแถบ Sidebar ซึ่งเป็นเมนูระดับบนสุด แสดงผลวิเคราะห์ภาพรวม เช่น จำนวนบทสนทนา (Conversations), จำนวนคำถามทั้งหมด (Messages), และความเร็วเฉลี่ยในการตอบของ AI
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 2: Conversations -->
+      <section id="admin_2_conversations" class="glass-panel p-6 md:p-8 rounded-3xl space-y-6" @intersect="activeSection = 'admin_2_conversations'">
+        <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+          <span class="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center font-bold text-sm text-white">2</span>
+          <h2 class="text-2xl font-bold text-white">เมนูที่ 2: Conversations (รายการบทสนทนาทั้งหมด)</h2>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          เมนูสำหรับการตรวจสอบการสนทนาจริงระหว่างผู้ใช้กับแชทบอท แอดมินสามารถเข้ามาดูรายละเอียดประวัติการพูดคุยของแต่ละ Session, แพลตฟอร์มที่เชื่อมต่อ (เช่น Web, LINE, Facebook) และสามารถคลิกที่ปุ่มแว่นขยายเพื่ออ่านบันทึกแชทฉบับเต็มเพื่อตรวจความถูกต้องของเนื้อหาได้
+        </p>
+        <div class="space-y-4">
+          <div class="rounded-2xl overflow-hidden border border-white/5 bg-slate-950 p-1.5 shadow-2xl relative">
+            <img src="assets/manual/admin_2_conversations.png" alt="หน้า Conversations" class="w-full h-auto rounded-xl">
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900/50 text-xs text-slate-400 leading-relaxed border border-white/5">
+            <strong>🔴 จุดเน้นวงกลมสีแดง:</strong> แถบซ้ายมือจะเน้นตำแหน่งเมนู <strong>Conversations</strong> แสดงตารางข้อมูลผู้ติดต่อล่าสุด ตัวกรองการค้นหาตามคีย์เวิร์ด และปุ่มดูบันทึกแชท
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 3: Analytics -->
+      <section id="admin_3_analytics" class="glass-panel p-6 md:p-8 rounded-3xl space-y-6" @intersect="activeSection = 'admin_3_analytics'">
+        <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+          <span class="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center font-bold text-sm text-white">3</span>
+          <h2 class="text-2xl font-bold text-white">เมนูที่ 3: Analytics (รายงานวิเคราะห์สถิติเชิงลึก)</h2>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          หน้าวิเคราะห์ประสิทธิภาพในระยะยาว แสดงผลสถิติเปอร์เซ็นต์คำตอบที่ถูกต้อง สถิติการตอบกลับแบบผิดพลาด (Fallback Rate) อัตราความพึงพอใจของคะแนนการประเมินจากผู้ใช้งาน และแสดงสัดส่วนการเรียกใช้งานแชทแยกตามแต่ละแพลตฟอร์มปลายทาง
+        </p>
+        <div class="space-y-4">
+          <div class="rounded-2xl overflow-hidden border border-white/5 bg-slate-950 p-1.5 shadow-2xl relative">
+            <img src="assets/manual/admin_3_analytics.png" alt="หน้า Analytics" class="w-full h-auto rounded-xl">
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900/50 text-xs text-slate-400 leading-relaxed border border-white/5">
+            <strong>🔴 จุดเน้นวงกลมสีแดง:</strong> ไฮไลต์เมนู <strong>Analytics</strong> บนระบบ แสดงหน้าจอและกราฟแท่งเปรียบเทียบประสิทธิภาพ ความถี่การใช้งานรายชั่วโมง/รายวันของบอท
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 4: Token Usage -->
+      <section id="admin_4_token_usage" class="glass-panel p-6 md:p-8 rounded-3xl space-y-6" @intersect="activeSection = 'admin_4_token_usage'">
+        <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+          <span class="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center font-bold text-sm text-white">4</span>
+          <h2 class="text-2xl font-bold text-white">เมนูที่ 4: Token Usage (ปริมาณการใช้งาน Token และค่าใช้จ่าย)</h2>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          การบริหารโมเดล AI ผ่าน OpenRouter จะมีค่าใช้จ่ายผันแปรตามจำนวน Token ที่ประมวลผล (คำถามส่งไป + คำตอบที่สร้างขึ้น) เมนูนี้มีตารางรายงานแยกอย่างละเอียดตามรายโมเดลของ OpenRouter (เช่น GPT, Claude) เพื่อให้ผู้บริหารตรวจสอบยอดโควตาและงบประมาณสะสมได้แม่นยำ
+        </p>
+        <div class="space-y-4">
+          <div class="rounded-2xl overflow-hidden border border-white/5 bg-slate-950 p-1.5 shadow-2xl relative">
+            <img src="assets/manual/admin_4_token_usage.png" alt="หน้า Token Usage" class="w-full h-auto rounded-xl">
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900/50 text-xs text-slate-400 leading-relaxed border border-white/5">
+            <strong>🔴 จุดเน้นวงกลมสีแดง:</strong> ไฮไลต์เมนู <strong>Token Usage</strong> ในแถบคำสั่งซ้ายมือ สำหรับตรวจสอบโควตาการประมวลผลคำสั่งภาษาและค่าใช้จ่ายสะสมเป็นสกุลเงินดอลลาร์
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 5: Reports -->
+      <section id="admin_5_reports" class="glass-panel p-6 md:p-8 rounded-3xl space-y-6" @intersect="activeSection = 'admin_5_reports'">
+        <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+          <span class="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center font-bold text-sm text-white">5</span>
+          <h2 class="text-2xl font-bold text-white">เมนูที่ 5: Reports (หน้ารายงานผลและการส่งออกข้อมูล)</h2>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          เมนูสำหรับออกเอกสารรายงานสถิติและข้อมูลการบันทึกแชท แอดมินสามารถใช้ตัวกรองตามช่วงเวลา (Start/End Date) และกดปุ่ม Export เพื่อดาวน์โหลดไฟล์สรุปในรูปแบบตาราง Excel หรือ CSV ไปใช้ในการประชุมผู้บริหารต่อไป
+        </p>
+        <div class="space-y-4">
+          <div class="rounded-2xl overflow-hidden border border-white/5 bg-slate-950 p-1.5 shadow-2xl relative">
+            <img src="assets/manual/admin_5_reports.png" alt="หน้า Reports" class="w-full h-auto rounded-xl">
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900/50 text-xs text-slate-400 leading-relaxed border border-white/5">
+            <strong>🔴 จุดเน้นวงกลมสีแดง:</strong> แถบ Sidebar ไฮไลต์ที่ <strong>Reports</strong> แสดงหน้าการดาวน์โหลดข้อมูลดิบและสถิติรายสัปดาห์/รายเดือน
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 6: Knowledge Base -->
+      <section id="admin_6_knowledge" class="glass-panel p-6 md:p-8 rounded-3xl space-y-6" @intersect="activeSection = 'admin_6_knowledge'">
+        <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+          <span class="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center font-bold text-sm text-white">6</span>
+          <h2 class="text-2xl font-bold text-white">เมนูที่ 6: Knowledge Base (การจัดการฐานข้อมูลความรู้บอท)</h2>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          นี่คือ **"สมอง"** หลักของแชทบอท! แอดมินสามารถอัปโหลดเอกสาร PDF, Word หรือป้อนบทความ Q&A ลงในระบบ จากนั้นระบบ RAG จะแบ่งเนื้อหาออกเป็น Chunk ย่อยๆ และทำ Vector Embedding ให้บอทใช้ในการตอบคำถาม มีระบบซิงค์ไฟล์กับ Google Drive อัตโนมัติด้วย
+        </p>
+        <div class="space-y-4">
+          <div class="rounded-2xl overflow-hidden border border-white/5 bg-slate-950 p-1.5 shadow-2xl relative">
+            <img src="assets/manual/admin_6_knowledge.png" alt="หน้า Knowledge Base" class="w-full h-auto rounded-xl">
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900/50 text-xs text-slate-400 leading-relaxed border border-white/5">
+            <strong>🔴 จุดเน้นวงกลมสีแดง:</strong> เน้นที่เมนู <strong>Knowledge Base</strong> ในแถบด้านข้าง แสดงปุ่ม Sync จาก Google Drive บัญชีเอกสารส่วนกลาง และตารางรายการข้อมูลความรู้ที่ผ่านการจัดเก็บเวกเตอร์ในระบบ
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 7: Wiki Knowledge -->
+      <section id="admin_7_wiki" class="glass-panel p-6 md:p-8 rounded-3xl space-y-6" @intersect="activeSection = 'admin_7_wiki'">
+        <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+          <span class="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center font-bold text-sm text-white">7</span>
+          <h2 class="text-2xl font-bold text-white">เมนูที่ 7: Wiki Knowledge (ชั้นความรู้ที่ AI เรียบเรียงเป็นหน้า)</h2>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Wiki Knowledge คือ <strong>ชั้นความรู้ยกระดับ</strong> ที่ต่อยอดจาก Knowledge Base เดิม แทนที่จะให้บอทค้นจาก "เศษเนื้อหา (Chunk)" ที่ถูกตัดออกจากเอกสารดิบทุก ๆ ~1,200 ตัวอักษร ระบบจะให้ AI <strong>อ่านเอกสารทั้งฉบับแล้วเรียบเรียงใหม่เป็น "หน้า Wiki" แยกตามหัวข้อที่ผู้ใช้มักถาม</strong> (เช่น "เวลาเปิดทำการ", "การยืม-คืนหนังสือ") โดยแต่ละหน้าจบครบในตัว พร้อมชุด "คำถามตัวอย่าง" ที่คนจริงน่าจะพิมพ์ถามหน้านั้น
+        </p>
+
+        <!-- Why: ปัญหาของระบบเดิม -->
+        <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-sm text-amber-100/90 leading-relaxed">
+          <strong class="text-amber-300">⚠️ ปัญหาของระบบเดิม (Knowledge Base อย่างเดียว):</strong>
+          <ul class="list-disc list-inside mt-2 space-y-1 text-amber-100/80">
+            <li>เอกสารถูกตัดเป็น Chunk กลางเนื้อหา ทำให้ข้อมูลเรื่องเดียวกันกระจายคนละท่อน บอทตอบไม่ครบ</li>
+            <li>Embedding ภาษาไทยได้คะแนนต่ำ คำถามสั้น ๆ อย่าง "เปิดกี่โมง" มักค้นไม่เจอ กลายเป็น Fallback</li>
+            <li>บอทไม่รู้ว่าตัวเองมีความรู้เรื่องอะไรบ้าง ตอบได้แค่ "ไม่มีข้อมูล" แนะนำหัวข้อใกล้เคียงไม่ได้</li>
+          </ul>
+        </div>
+
+        <!-- ขั้นตอนการทำงาน -->
+        <div>
+          <h3 class="text-base font-bold text-white mb-3">🔄 ขั้นตอนการทำงาน (Workflow)</h3>
+          <div class="grid gap-3 sm:grid-cols-3">
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5">
+              <div class="text-teal-400 font-bold text-sm mb-1">1. สร้างร่าง (Build)</div>
+              <p class="text-xs text-slate-400 leading-relaxed">AI อ่านเอกสารใน Knowledge Base แล้วร่างเป็นหน้า Wiki หลายหน้า พร้อมคำถามตัวอย่าง — ทุกหน้าเริ่มต้นเป็นสถานะ <strong class="text-amber-300">ร่าง (Draft)</strong></p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5">
+              <div class="text-teal-400 font-bold text-sm mb-1">2. ตรวจทาน (Review)</div>
+              <p class="text-xs text-slate-400 leading-relaxed">แอดมิน <strong>ต้องอ่านและแก้ไข</strong> เนื้อหาที่ AI ร่าง เทียบกับเอกสารต้นฉบับก่อน เพื่อกันข้อมูลคลาดเคลื่อน (Hallucination) — นี่คือด่านสำคัญที่สุด</p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5">
+              <div class="text-teal-400 font-bold text-sm mb-1">3. เผยแพร่ (Publish)</div>
+              <p class="text-xs text-slate-400 leading-relaxed">เมื่อกดเผยแพร่ หน้านั้นจะถูกแปลงเป็นข้อมูลใน Knowledge Base โดยอัตโนมัติ และบอทจะนำไปใช้ตอบได้ทันที</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ตารางเปรียบเทียบ -->
+        <div>
+          <h3 class="text-base font-bold text-white mb-3">⚖️ Knowledge Base เทียบกับ Wiki Knowledge</h3>
+          <div class="overflow-x-auto rounded-xl border border-white/10">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-800/70 text-slate-200">
+                <tr>
+                  <th class="px-4 py-3 font-semibold">หัวข้อ</th>
+                  <th class="px-4 py-3 font-semibold">Knowledge Base (เมนูที่ 6)</th>
+                  <th class="px-4 py-3 font-semibold text-teal-300">Wiki Knowledge (เมนูที่ 7)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5 text-slate-400">
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-300">หน่วยของความรู้</td>
+                  <td class="px-4 py-3">Chunk — เศษเนื้อหาตัดทุก ~1,200 ตัวอักษร</td>
+                  <td class="px-4 py-3 text-teal-100/80">หน้า Wiki — 1 หัวข้อจบครบในหน้าเดียว</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-300">ที่มาของเนื้อหา</td>
+                  <td class="px-4 py-3">เอกสารดิบจาก Google Drive (ตามต้นฉบับ)</td>
+                  <td class="px-4 py-3 text-teal-100/80">AI เรียบเรียงใหม่ + คนตรวจทานก่อนใช้</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-300">วิธีที่บอทค้นเจอ</td>
+                  <td class="px-4 py-3">เทียบคำถามกับ "เนื้อหา" (คะแนนภาษาไทยต่ำ)</td>
+                  <td class="px-4 py-3 text-teal-100/80">เทียบคำถามกับ "คำถามตัวอย่าง" (แม่นกว่ามาก)</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-300">ความครบถ้วนของคำตอบ</td>
+                  <td class="px-4 py-3">อาจตอบไม่ครบเพราะข้อมูลกระจายหลาย Chunk</td>
+                  <td class="px-4 py-3 text-teal-100/80">ครบ เพราะรวมเรื่องเดียวกันไว้หน้าเดียว</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-300">การควบคุมคุณภาพ</td>
+                  <td class="px-4 py-3">ใช้เนื้อหาตามต้นฉบับทันทีที่ Sync</td>
+                  <td class="px-4 py-3 text-teal-100/80">ต้องผ่านการ Approve จากคนก่อนเสมอ</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-300">ต้นทุน Token</td>
+                  <td class="px-4 py-3">สูงกว่า (ส่ง Chunk หลายก้อนเข้า AI)</td>
+                  <td class="px-4 py-3 text-teal-100/80">ประหยัดกว่า ~60% (ส่งหน้าเดียวสั้น ๆ)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ข้อดี / ข้อเสีย -->
+        <div class="grid gap-3 sm:grid-cols-2">
+          <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+            <strong class="text-emerald-300 text-sm">✅ ข้อดี</strong>
+            <ul class="list-disc list-inside mt-2 space-y-1 text-xs text-emerald-100/80 leading-relaxed">
+              <li>ตอบแม่นและครบขึ้น โดยเฉพาะคำถามภาษาไทยสั้น ๆ</li>
+              <li>ประหยัดค่า Token/ค่า AI ต่อการตอบหนึ่งครั้ง</li>
+              <li>คนตรวจทานก่อนเผยแพร่ ลดโอกาสบอทมั่ว</li>
+              <li>บอทรู้ขอบเขตความรู้ตัวเอง แนะนำหัวข้อใกล้เคียงได้</li>
+              <li>เมนู "วิเคราะห์หัวข้อที่ขาด" ช่วยหาเรื่องที่ผู้ใช้ถามบ่อยแต่ยังไม่มีข้อมูล</li>
+            </ul>
+          </div>
+          <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20">
+            <strong class="text-rose-300 text-sm">⚠️ ข้อควรระวัง / ข้อเสีย</strong>
+            <ul class="list-disc list-inside mt-2 space-y-1 text-xs text-rose-100/80 leading-relaxed">
+              <li>มีค่าเรียกใช้ AI ตอนสั่งสร้างร่าง (Build)</li>
+              <li>ต้องใช้แรงคนตรวจทานก่อนเผยแพร่ทุกหน้า</li>
+              <li>AI อาจสรุปตกหล่นรายละเอียด ต้องเทียบต้นฉบับ</li>
+              <li>ถ้าเอกสารต้นทางแก้ไข ต้องสั่งสร้างร่างใหม่และตรวจทานซ้ำ</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- ทำงานร่วมกันอย่างไร -->
+        <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5 text-xs text-slate-400 leading-relaxed">
+          <strong class="text-teal-300">🔗 สองเมนูนี้ทำงานร่วมกันอย่างไร:</strong>
+          Knowledge Base ยังคงเป็น "คลังเอกสารดิบ" ที่เป็นต้นทางและแหล่งอ้างอิงเสมอ ส่วน Wiki Knowledge คือ "ฉบับเรียบเรียงที่คนรับรองแล้ว"
+          เวลาผู้ใช้ถาม ระบบจะ <strong>ค้นจากคำถามตัวอย่างของ Wiki ก่อน (ชั้นที่ 1)</strong> ถ้าตรงก็ตอบด้วยหน้า Wiki ทันที
+          แต่ถ้าไม่ตรง จะ <strong>ตกไปค้นจาก Chunk ดิบใน Knowledge Base ตามเดิม (ชั้นที่ 2)</strong> ดังนั้นเอกสารที่ยังไม่ได้ทำเป็น Wiki ก็ยังตอบได้ ไม่มีอะไรหายไป — เป็นการเสริม ไม่ใช่แทนที่
+        </div>
+      </section>
+
+      <!-- STEP 8: Feedback -->
+      <section id="admin_8_feedback" class="glass-panel p-6 md:p-8 rounded-3xl space-y-6" @intersect="activeSection = 'admin_8_feedback'">
+        <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+          <span class="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center font-bold text-sm text-white">8</span>
+          <h2 class="text-2xl font-bold text-white">เมนูที่ 8: Feedback (ตารางประเมินผลคำตอบจากผู้ใช้)</h2>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          เมื่อผู้ใช้ทั่วไปกดปุ่มถูกใจหรือกดไม่ถูกใจในหน้ากล่องแชท ข้อมูลเหล่านั้นจะถูกส่งเข้าตารางนี้ แอดมินสามารถเช็กได้ว่ามีบทสนทนาใดบ้างที่ผู้ใช้ประเมินว่า "ไม่พึงพอใจ 👎" เพื่อให้สามารถคัดลอกคำถามนั้นไปวิเคราะห์แก้ไขฐานข้อมูลความรู้ได้ตรงจุด
+        </p>
+        <div class="space-y-4">
+          <div class="rounded-2xl overflow-hidden border border-white/5 bg-slate-950 p-1.5 shadow-2xl relative">
+            <img src="assets/manual/admin_7_feedback.png" alt="หน้า Feedback" class="w-full h-auto rounded-xl">
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900/50 text-xs text-slate-400 leading-relaxed border border-white/5">
+            <strong>🔴 จุดเน้นวงกลมสีแดง:</strong> ไฮไลต์เมนู <strong>Feedback</strong> ในหน้าต่างแผงควบคุมหลัก สำหรับติดตามการให้คะแนนความพึงพอใจ
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 9: Missed Questions (Unanswered) -->
+      <section id="admin_9_missed" class="glass-panel p-6 md:p-8 rounded-3xl space-y-6" @intersect="activeSection = 'admin_9_missed'">
+        <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+          <span class="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center font-bold text-sm text-white">9</span>
+          <h2 class="text-2xl font-bold text-white">เมนูที่ 9: Unanswered (กล่องคำถามที่บอทไม่มีคำตอบ)</h2>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          รวบรวมคำถามที่ RAG หาเนื้อหาอ้างอิงไม่ได้ และบอทแสดงข้อความ Fallback หน้าจอนี้มีความสำคัญในการเพิ่มพูนความรู้ของบอท โดยแอดมินสามารถคลิกปุ่ม **"Add to Knowledge"** บนคำถามที่พลาดไปเหล่านี้ และกรอกคำตอบที่ถูกต้องเพื่อสอนบอทให้ตอบได้สำหรับการถามครั้งถัดไป
+        </p>
+        <div class="space-y-4">
+          <div class="rounded-2xl overflow-hidden border border-white/5 bg-slate-950 p-1.5 shadow-2xl relative">
+            <img src="assets/manual/admin_8_missed.png" alt="หน้า Unanswered" class="w-full h-auto rounded-xl">
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900/50 text-xs text-slate-400 leading-relaxed border border-white/5">
+            <strong>🔴 จุดเน้นวงกลมสีแดง:</strong> แสดงตำแหน่งเมนู <strong>Unanswered</strong> (ทางระบบใช้ไอคอนเครื่องหมายคำถาม) และรายการคำถามจริงที่แชทบอทตอบไม่ได้ค้างไว้
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 10: Handoff Requests -->
+      <section id="admin_10_handoff" class="glass-panel p-6 md:p-8 rounded-3xl space-y-6" @intersect="activeSection = 'admin_10_handoff'">
+        <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+          <span class="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center font-bold text-sm text-white">10</span>
+          <h2 class="text-2xl font-bold text-white">เมนูที่ 10: Handoff (จัดการการขอส่งต่อคุยกับเจ้าหน้าที่)</h2>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          เมื่อผู้ใช้กดยืนยันการขอติดต่อเจ้าหน้าที่จากแบบฟอร์ม Handoff รายการคำขอจะถูกบันทึกมาที่นี่พร้อมข้อมูลติดต่อกลับ แอดมินสามารถเข้ามาเช็กสถานะการติดต่อ จัดกลุ่มความเร่งด่วน และเมื่อดำเนินการแก้ปัญหาเรียบร้อยแล้วสามารถกดอัปเดตเป็นสถานะ "Resolved (ดำเนินการแล้ว)" ได้
+        </p>
+        <div class="space-y-4">
+          <div class="rounded-2xl overflow-hidden border border-white/5 bg-slate-950 p-1.5 shadow-2xl relative">
+            <img src="assets/manual/admin_9_handoff.png" alt="หน้า Handoff Requests" class="w-full h-auto rounded-xl">
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900/50 text-xs text-slate-400 leading-relaxed border border-white/5">
+            <strong>🔴 จุดเน้นวงกลมสีแดง:</strong> แสดงตารางคำขอล่าสุดในเมนู <strong>Handoff</strong> พร้อมสถานะแสดงผล (Pending สีเหลือง / Resolved สีเขียว) และข้อมูลของช่องทางติดต่อกลับของผู้ติดต่อ
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 11: Integration -->
+      <section id="admin_11_integration" class="glass-panel p-6 md:p-8 rounded-3xl space-y-6" @intersect="activeSection = 'admin_11_integration'">
+        <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+          <span class="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center font-bold text-sm text-white">11</span>
+          <h2 class="text-2xl font-bold text-white">เมนูที่ 11: Integration (การเชื่อมต่อภายนอก)</h2>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          แหล่งรวมโค้ดและข้อมูลทางเทคนิคสำหรับนำแชทบอทตัวนั้นๆ ไปใช้งาน เช่น โค้ดสำหรับคัดลอกไปวางฝังบนหน้าแรกของระบบอื่นๆ (Web Widget) หรือข้อมูล Webhook URL และ Token สำหรับนำไปเชื่อมต่อเข้ากับช่องทาง Facebook Messenger และ LINE OA ของหน่วยงาน
+        </p>
+        <div class="space-y-4">
+          <div class="rounded-2xl overflow-hidden border border-white/5 bg-slate-950 p-1.5 shadow-2xl relative">
+            <img src="assets/manual/admin_10_integration.png" alt="หน้า Integration" class="w-full h-auto rounded-xl">
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900/50 text-xs text-slate-400 leading-relaxed border border-white/5">
+            <strong>🔴 จุดเน้นวงกลมสีแดง:</strong> เน้นสัญลักษณ์ <strong>Integration</strong> และรายละเอียดกล่องข้อความบรรทัดคำสั่งโค้ด HTML script สำหรับคัดลอกไปฝังหน้าเว็บภายนอก
+          </div>
+        </div>
+      </section>
+
+      <!-- Horizontal Divider -->
+      <div class="h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
+
+      <!-- STEP 12: Bots config -->
+      <section id="admin_12_bots" class="glass-panel p-6 md:p-8 rounded-3xl space-y-6" @intersect="activeSection = 'admin_12_bots'">
+        <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+          <span class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-sm text-white">12</span>
+          <h2 class="text-2xl font-bold text-white">เมนูที่ 12: Bots Config (ตั้งค่าข้อมูลและธีมของบอทแต่ละตัว)</h2>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          เมนูสำหรับการสร้างและบริหารความหลากหลายของบอท (Multi-Bot configuration) โดยแอดมินระดับสูงสามารถตั้งชื่อบอท, กำหนดพฤติกรรมการทักทายแรกเริ่ม (Welcome message), ร่างข้อความต้นฉบับสำหรับการทำงาน (System Prompt), เลือกโมเดล AI หลักและโมเดลสำรอง, รวมถึงเปลี่ยนภาพโลโก้และสีสันหลักของหน้ากากช่องพิมพ์แชท Widget
+        </p>
+        <div class="space-y-4">
+          <div class="rounded-2xl overflow-hidden border border-white/5 bg-slate-950 p-1.5 shadow-2xl relative">
+            <img src="assets/manual/admin_11_bots.png" alt="หน้า Bots Config" class="w-full h-auto rounded-xl">
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900/50 text-xs text-slate-400 leading-relaxed border border-white/5">
+            <strong>🔴 จุดเน้นวงกลมสีแดง:</strong> ไฮไลต์เมนู <strong>Bots</strong> ในกลุ่มการตั้งค่าเชิงระบบหลังบ้าน แสดงกล่องปรับแต่งพฤติกรรม ข้อความตัวตน System Prompt และหน้าตาการแสดงผลของบอทแต่ละเวอร์ชัน
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 12: AI Models -->
+      <section id="admin_13_models" class="glass-panel p-6 md:p-8 rounded-3xl space-y-6" @intersect="activeSection = 'admin_13_models'">
+        <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+          <span class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-sm text-white">13</span>
+          <h2 class="text-2xl font-bold text-white">เมนูที่ 13: AI Models (จัดการรายการและราคาโมเดลภาษา)</h2>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          หน้าจอการเลือกใช้คลังโมเดลประมวลผลขนาดใหญ่จาก OpenRouter API (เช่น GPT, Claude, Llama) โดย Super Admin สามารถกดปุ่ม **"Sync Models"** เพื่อดึงโมเดลใหม่ๆ ที่อัปเดตบนคลาวด์ พร้อมทั้งเปิด/ปิดสถานะโมเดลที่จะให้บอทในสิทธิ์การดูแลเลือกนำมาประมวลผลได้อิสระ
+        </p>
+        <div class="space-y-4">
+          <div class="rounded-2xl overflow-hidden border border-white/5 bg-slate-950 p-1.5 shadow-2xl relative">
+            <img src="assets/manual/admin_13_models.png" alt="หน้า AI Models" class="w-full h-auto rounded-xl">
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900/50 text-xs text-slate-400 leading-relaxed border border-white/5">
+            <strong>🔴 จุดเน้นวงกลมสีแดง:</strong> แถบคำสั่งระบบไฮไลต์ที่ <strong>AI Models</strong> แสดงหน้าการเปิดใช้งานโมเดลภาษาของ OpenRouter และตารางราคาต่อ 1 ล้าน token
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 13: Users -->
+      <section id="admin_14_users" class="glass-panel p-6 md:p-8 rounded-3xl space-y-6" @intersect="activeSection = 'admin_14_users'">
+        <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+          <span class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-sm text-white">14</span>
+          <h2 class="text-2xl font-bold text-white">เมนูที่ 14: User Management (การจัดการสิทธิ์แอดมินหลังบ้าน)</h2>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          มีไว้สำหรับ Super Admin เพื่อกำหนดหรืออัปเดตสิทธิ์ของเจ้าหน้าที่ในระบบ การสร้างบัญชีแอดมินระดับท้องถิ่น (Local Account), ปรับเปลี่ยนสิทธิ์และบทบาท (Super Admin, Admin, Viewer) และผูกสิทธิ์บอทแต่ละตัวเข้ากับบุคคล เพื่อป้องกันไม่ให้แก้ไขข้อมูลบอทของแผนกอื่น
+        </p>
+        <div class="space-y-4">
+          <div class="rounded-2xl overflow-hidden border border-white/5 bg-slate-950 p-1.5 shadow-2xl relative">
+            <img src="assets/manual/admin_14_users.png" alt="หน้า User Management" class="w-full h-auto rounded-xl">
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900/50 text-xs text-slate-400 leading-relaxed border border-white/5">
+            <strong>🔴 จุดเน้นวงกลมสีแดง:</strong> ไฮไลต์เมนู <strong>User Management</strong> (ทางระบบใช้ไอคอนผู้คนจำนวนมาก) แสดงรายการเจ้าหน้าที่และปุ่มสำหรับสร้างหรือลบแอดมิน
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 14: Email Settings -->
+      <section id="admin_15_email_settings" class="glass-panel p-6 md:p-8 rounded-3xl space-y-6" @intersect="activeSection = 'admin_15_email_settings'">
+        <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+          <span class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-sm text-white">15</span>
+          <h2 class="text-2xl font-bold text-white">เมนูที่ 15: Email Settings (การตั้งค่าการแจ้งเตือนอีเมล)</h2>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          หน้าจอการกรอกข้อมูลการตั้งค่า SMTP Server เพื่อให้ระบบสามารถทำการส่งอีเมลแจ้งเตือนโดยอัตโนมัติ (เช่น ส่งเมลเข้ากล่องอินบ็อกซ์ของเจ้าหน้าที่เมื่อมีผู้ใช้กดส่งข้อมูลขอคุยกับเจ้าหน้าที่/Handoff เข้ามาในระบบ) เพื่อให้ตอบรับและแก้ไขสถานการณ์ได้ทันท่วงที
+        </p>
+        <div class="space-y-4">
+          <div class="rounded-2xl overflow-hidden border border-white/5 bg-slate-950 p-1.5 shadow-2xl relative">
+            <img src="assets/manual/admin_15_email_settings.png" alt="หน้า Email Settings" class="w-full h-auto rounded-xl">
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900/50 text-xs text-slate-400 leading-relaxed border border-white/5">
+            <strong>🔴 จุดเน้นวงกลมสีแดง:</strong> ไฮไลต์เมนู <strong>Email Settings</strong> แสดงฟอร์มการกำหนดค่าโฮสต์ SMTP, พอร์ตเชื่อมต่อ, อีเมลส่งหลัก และรหัสผ่านเชื่อมโยง
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 15: Settings -->
+      <section id="admin_16_settings" class="glass-panel p-6 md:p-8 rounded-3xl space-y-6" @intersect="activeSection = 'admin_16_settings'">
+        <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+          <span class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-sm text-white">16</span>
+          <h2 class="text-2xl font-bold text-white">เมนูที่ 16: Global Settings (การตั้งค่าระบบความปลอดภัยและระบบจำกัดสิทธิ์)</h2>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          หน้าสุดท้ายของการตั้งค่าระบบส่วนกลางทั้งหมด (System Settings) สำหรับกำหนดชื่อแอปพลิเคชันหลัก, ตัวเลือกการจำกัดการป้อนแชทต่อนาที/ต่อชั่วโมงต่อ 1 เซสชันแชท (Rate Limiting) เพื่อป้องกันการโจมตีจากบอทภายนอกหรือผู้ใช้ที่จงใจเรียกใช้โควตา และตั้งค่าขีดจำกัด Answer Cache
+        </p>
+        <div class="space-y-4">
+          <div class="rounded-2xl overflow-hidden border border-white/5 bg-slate-950 p-1.5 shadow-2xl relative">
+            <img src="assets/manual/admin_16_settings.png" alt="หน้า Global Settings" class="w-full h-auto rounded-xl">
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900/50 text-xs text-slate-400 leading-relaxed border border-white/5">
+            <strong>🔴 จุดเน้นวงกลมสีแดง:</strong> แถบทางซ้ายไฮไลต์เมนู <strong>Settings</strong> (ไอคอนฟันเฟือง) แสดงแบบฟอร์มการจำกัดความถี่การถาม และการตั้งค่าระบบแคชของคำถามพบบ่อยเพื่อประหยัดโควตาค่าใช้จ่าย AI
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Scroll top button -->
+  <button 
+    @click="window.scrollTo({ top: 0, behavior: 'smooth' })" 
+    x-show="showScrollTop" 
+    x-transition
+    class="fixed bottom-6 right-6 w-12 h-12 rounded-xl bg-teal-600 hover:bg-teal-500 text-white flex items-center justify-center shadow-xl hover:shadow-teal-600/30 transition-all z-50 focus:outline-none"
+    title="เลื่อนขึ้นบนสุด"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7" />
+    </svg>
+  </button>
+
+  <!-- Footer -->
+  <footer class="w-full py-8 mt-12 text-center text-slate-600 text-xs border-t border-white/5 bg-slate-950/20">
+    <div class="max-w-7xl mx-auto px-6 space-y-2">
+      <p>© 2026 มหาวิทยาลัยพะเยา · ระบบจัดการแชทบอทอัจฉริยะ (CBMS) สงวนลิขสิทธิ์</p>
+      <p>จัดทำเอกสารคู่มือการบริหารจัดการระบบหลังบ้านสำหรับผู้ดูแลระบบและแอดมิน</p>
+    </div>
+  </footer>
+
+  <!-- Scroll-spy script -->
+  <script>
+    document.addEventListener('alpine:init', () => {
+      const sections = [
+        'intro', 
+        'admin_1_dashboard', 'admin_2_conversations', 'admin_3_analytics', 'admin_4_token_usage', 'admin_5_reports',
+        'admin_6_knowledge', 'admin_7_wiki', 'admin_8_feedback', 'admin_9_missed', 'admin_10_handoff', 'admin_11_integration',
+        'admin_12_bots', 'admin_13_models', 'admin_14_users', 'admin_15_email_settings', 'admin_16_settings'
+      ];
+      window.addEventListener('scroll', () => {
+        const scrollPosition = window.scrollY + 220; // Offset for header + padding
+        for (const section of sections) {
+          const el = document.getElementById(section);
+          if (el) {
+            const top = el.offsetTop;
+            const height = el.offsetHeight;
+            if (scrollPosition >= top && scrollPosition < top + height) {
+              const alpineBody = document.querySelector('[x-data]');
+              if (alpineBody && alpineBody.__x) {
+                alpineBody.__x.$data.activeSection = section;
+              }
+              break;
+            }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+{
+    "name": "cbms/ai-chatbot-system",
+    "description": "AI Chatbot System with Multi-Platform support (Web, Facebook, LINE)",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.4",
+        "firebase/php-jwt": "^6.10",
+        "google/apiclient": "^2.15",
+        "guzzlehttp/guzzle": "^7.9",
+        "league/oauth2-client": "^2.7",
+        "ramsey/uuid": "^4.7",
+        "smalot/pdfparser": "2.0",
+        "thenetworg/oauth2-azure": "^2.2",
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "App\\Controllers\\": "app/Controllers/",
+            "App\\Services\\": "app/Services/",
+            "App\\Models\\": "app/Models/",
+            "App\\Helpers\\": "app/Helpers/"
+        },
+        "files": [
+            "app/Helpers/Database.php",
+            "app/Helpers/Response.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Google\\Task\\Composer::cleanup"
+        ]
+    },
+    "extra": {
+        "google/apiclient-services": [
+            "Drive"
+        ]
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "audit": {
+            "ignore": ["PKSA-y2cr-5h3j-g3ys"]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

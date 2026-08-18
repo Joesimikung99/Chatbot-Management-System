@@ -1,0 +1,41 @@
+# ── Secrets / credentials — ห้ามขึ้น repo เด็ดขาด ───────────────
+.env
+*.env
+!.env.example
+**/google-credentials.json
+**/service-account*.json
+*.pem
+*.key
+*.p12
+
+# ── Dependencies (สร้างใหม่ได้ด้วย composer install / npm install) ─
+**/vendor/
+**/node_modules/
+composer.phar
+
+# ── Runtime / cache / logs ─────────────────────────────────────
+**/storage/logs/*
+!**/storage/logs/.gitkeep
+**/storage/cache/*
+**/.phpunit.cache/
+*.log
+
+# ── Automation artifacts (มี session cookie / ภาพหน้า login) ─────
+**/temp_chrome_profile/
+login_result.png
+admin_screenshot_run.log
+**/screenshots/
+
+# ── Screenshot คู่มือ: มีชื่อ-อีเมลเจ้าหน้าที่จริง (PII) ──────────
+cbms/public/assets/manual/
+
+# ── Local tooling ─────────────────────────────────────────────
+.claude/settings.local.json
+.DS_Store
+Thumbs.db
+
+# ── ไฟล์ในเครื่องที่ไม่เกี่ยวกับ repo นี้ ────────────────────────
+fastVueJWT-main/
+fastVueJWT-main-full/
+*.rar
+README_TH.md

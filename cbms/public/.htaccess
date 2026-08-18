@@ -1,0 +1,78 @@
+Options -Indexes -MultiViews
+ServerSignature Off
+
+# ── Force HTTPS ─────────────────────────────────────────────────────────
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Redirect HTTP → HTTPS
+  RewriteCond %{HTTPS} off
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # ── Route /cbms/* to public/ ─────────────────────────────────────
+  # (Only needed if DocumentRoot is not already /public)
+
+  # Trailing slash for directories
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
+
+# ── Security Headers ────────────────────────────────────────────────────
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options    "nosniff"
+  Header always set X-Frame-Options           "SAMEORIGIN"
+  Header always set X-XSS-Protection          "1; mode=block"
+  Header always set Referrer-Policy           "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy        "geolocation=(), microphone=(), camera=()"
+  Header always set Content-Security-Policy   "default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; worker-src 'self' blob:;"
+</IfModule>
+
+# ── Protect Sensitive Files ─────────────────────────────────────────────
+<FilesMatch "\.(env|log|sql|sh|md|json|lock|yaml|yml|xml)$">
+  Order deny,allow
+  Deny from all
+</FilesMatch>
+
+<FilesMatch "^(composer\.(json|lock)|package(-lock)?\.json|\.gitignore|phpunit\.xml)$">
+  Order deny,allow
+  Deny from all
+</FilesMatch>
+
+# ── Block access to hidden directories ─────────────────────────────────
+<IfModule mod_rewrite.c>
+  RewriteRule (^|/)\.  - [F,L]
+</IfModule>
+
+# ── PHP Settings ────────────────────────────────────────────────────────
+<IfModule mod_php.c>
+  php_flag  display_errors      Off
+  php_flag  log_errors          On
+  php_value error_log           ../storage/logs/php-error.log
+  php_value upload_max_filesize 10M
+  php_value post_max_size       10M
+  php_value max_execution_time  120
+  php_value memory_limit        256M
+  php_value session.cookie_httponly 1
+  php_value session.cookie_secure   1
+  php_value session.use_strict_mode 1
+</IfModule>
+
+# ── Caching Static Assets ───────────────────────────────────────────────
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css              "access plus 7 days"
+  ExpiresByType application/javascript "access plus 7 days"
+  ExpiresByType image/png             "access plus 30 days"
+  ExpiresByType image/jpg             "access plus 30 days"
+  ExpiresByType image/jpeg            "access plus 30 days"
+  ExpiresByType image/webp            "access plus 30 days"
+  ExpiresByType image/svg+xml        "access plus 30 days"
+  ExpiresByType image/x-icon         "access plus 1 year"
+</IfModule>
+
+# ── Compression ─────────────────────────────────────────────────────────
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript
+  AddOutputFilterByType DEFLATE application/json text/plain text/xml
+</IfModule>
