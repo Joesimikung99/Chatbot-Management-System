@@ -41,39 +41,39 @@
 
 ```mermaid
 flowchart TB
-    subgraph ช่องทางผู้ใช้
-        W[Web widget]
-        F[Facebook Messenger]
-        L[LINE OA]
+    subgraph CH["User channels"]
+        W["Web widget"]
+        F["Facebook Messenger"]
+        L["LINE OA"]
     end
 
-    W --> API[public/api/chat.php]
-    F --> FW[webhook-facebook.php]
-    L --> LW[webhook-line.php]
+    W --> API["public/api/chat.php"]
+    F --> FW["webhook-facebook.php"]
+    L --> LW["webhook-line.php"]
 
-    API --> CC[ChatController]
-    FW --> FC[FacebookController]
-    LW --> LC[LineController]
+    API --> CC["ChatController"]
+    FW --> FC["FacebookController"]
+    LW --> LC["LineController"]
 
-    CC --> AI[AIService · RAG]
+    CC --> AI["AIService - RAG engine"]
     FC --> AI
     LC --> AI
 
-    AI --> CACHE[(AnswerCache)]
-    AI --> EMB[EmbeddingService]
-    EMB --> KB[(knowledge_chunks<br/>wiki_questions)]
-    AI --> OR[OpenRouterService]
-    OR --> LLM[OpenRouter API<br/>GPT-4o / Gemini / Claude / Llama]
+    AI --> CACHE[("answer_cache")]
+    AI --> EMB["EmbeddingService"]
+    EMB --> KB[("knowledge_chunks<br/>wiki_questions")]
+    AI --> OR["OpenRouterService"]
+    OR --> LLM["OpenRouter API<br/>GPT-4o, Gemini, Claude, Llama"]
 
-    DRIVE[Google Drive] --> SYNC[sync.php CLI]
+    DRIVE["Google Drive"] --> SYNC["sync.php CLI"]
     SYNC --> KB
-    SYNC --> WIKI[WikiService · LLM wiki pages]
+    SYNC --> WIKI["WikiService - LLM wiki pages"]
     WIKI --> KB
 
-    ADMIN[Admin Dashboard] --> DB[(MySQL 8.0)]
+    ADMIN["Admin Dashboard"] --> DB[("MySQL 8.0")]
     AI --> DB
-    O365[Microsoft Azure AD] --> ADMIN
-    CAMS[CAMS API] --> ADMIN
+    O365["Microsoft Azure AD"] --> ADMIN
+    CAMS["CAMS API"] --> ADMIN
 ```
 
 **ลำดับการตอบหนึ่งคำถาม:** ตรวจ rate limit → เช็ค answer cache → embed คำถาม (memoize + cache 30 วัน) → *Tier 1* เทียบกับคำถามตัวอย่างของหน้า Wiki → *Tier 2* ค้น chunk ด้วย cosine similarity → *Rescue* FULLTEXT ngram สำหรับคำเฉพาะ → ประกอบ prompt (system prompt + วันที่ไทย + สารบัญความรู้ + context + history) → เรียก LLM → บันทึก message/token/cost → ถ้าไม่เจอความรู้เลยตอบ fallback
