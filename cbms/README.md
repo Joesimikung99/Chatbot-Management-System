@@ -20,7 +20,7 @@
 | **Database** | MySQL 8.0+ |
 | **Frontend** | TailwindCSS 3 + Alpine.js 3 + Chart.js 4 |
 | **File Storage** | Google Drive API |
-| **Web Server** | Apache (mod_rewrite) |
+| **Web Server** | IIS (web.config) — รองรับ Apache/.htaccess ด้วย |
 | **Platforms** | Web, Facebook Messenger, LINE Messaging API |
 
 ---
@@ -52,7 +52,7 @@ z:\cbms\
 │   └── services.php                 # API keys config
 ├── database/
 │   ├── migrations/
-│   │   └── 001_create_all_tables.sql
+│   │   ├── 001_create_all_tables.sql .. 011_hybrid_search_query_cache.sql
 │   └── seeds/
 │       ├── 001_seed_data.sql
 │       └── 002_seed_demo_data.sql
@@ -96,7 +96,7 @@ z:\cbms\
 ### 1. Clone & Install
 
 ```bash
-cd z:\cbms
+cd cbms
 composer install
 cp .env.example .env
 ```
@@ -130,7 +130,7 @@ GOOGLE_DRIVE_FOLDER_ID=xxxxxxxx
 mysql -u root -p -e "CREATE DATABASE cbms_chatbot CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 
 # รัน Migrations
-mysql -u root -p cbms_chatbot < database/migrations/001_create_all_tables.sql
+for f in database/migrations/*.sql; do mysql -u root -p cbms_chatbot < "$f"; done
 mysql -u root -p cbms_chatbot < database/seeds/001_seed_data.sql
 mysql -u root -p cbms_chatbot < database/seeds/002_seed_demo_data.sql
 ```
@@ -144,11 +144,13 @@ php sync.php --sync-models
 ### 5. เข้าสู่ Admin Dashboard
 
 ```
-URL:      https://appupili.up.ac.th/cbms/admin/login.php
-Username: admin
-Password: Passw0rd!
+URL: https://appupili.up.ac.th/cbms/admin/login.php
 ```
-> ⚠️ เปลี่ยน Password ทันทีหลัง Login ครั้งแรก
+- **แนะนำ:** เข้าด้วยปุ่ม Microsoft Office 365 (ระบบตรวจสิทธิ์กับ CAMS ให้อัตโนมัติ)
+- **Local login:** seed ตั้ง hash เป็น `CHANGE_ME_BCRYPT_HASH` ต้องสร้างเองก่อนใช้
+  ```bash
+  php -r "echo password_hash('YOUR_PASSWORD', PASSWORD_DEFAULT);"
+  ```
 
 ---
 
@@ -158,17 +160,26 @@ Password: Passw0rd!
 # Sync AI models จาก OpenRouter
 php sync.php --sync-models
 
-# Sync ไฟล์จาก Google Drive + Embed
-php sync.php --sync-drive
+# Sync ไฟล์จาก Google Drive + Embed ทุกอย่างที่ค้าง
+php sync.php
 
-# Embed ไฟล์ทั้งหมดที่ pending
-php sync.php --embed-all
+# sync อย่างเดียว ไม่ embed / ประมวลผลเฉพาะ source เดียว
+php sync.php --sync-only
+php sync.php --source=3
 
 # Aggregate token analytics (run ด้วย cron)
 php sync.php --aggregate
 
+# LLM Wiki: ร่าง / publish / ดูหัวข้อที่ยังไม่มี
+php sync.php --build-wiki
+php sync.php --publish-wiki=12
+php sync.php --wiki-gaps --wiki-days=7
+
+# re-embed ทุก chunk ด้วยโมเดลปัจจุบัน (ต้องรันหลังเปลี่ยน embedding model)
+php sync.php --re-embed-all
+
 # ทดสอบ AI
-php sync.php --test-ai "มหาวิทยาลัยพะเยาอยู่ที่ไหน"
+php sync.php --test-ai
 ```
 
 ---
@@ -231,7 +242,7 @@ php sync.php --test-ai "มหาวิทยาลัยพะเยาอย�
 59 23 * * * cd /path/to/cbms && php sync.php --aggregate >> storage/logs/cron.log 2>&1
 
 # Weekly Google Drive sync (Sunday 02:00)
-0 2 * * 0 cd /path/to/cbms && php sync.php --sync-drive >> storage/logs/cron.log 2>&1
+0 2 * * 0 cd /path/to/cbms && php sync.php >> storage/logs/cron.log 2>&1
 ```
 
 ---
@@ -254,4 +265,4 @@ php sync.php --test-ai "มหาวิทยาลัยพะเยาอย�
 
 ## 📄 License
 
-Internal use — มหาวิทยาลัยพะเยา © 2025
+Internal use — มหาวิทยาลัยพะเยา © 2026
